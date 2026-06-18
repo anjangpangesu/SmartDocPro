@@ -52,10 +52,10 @@
         >
           <div>
             <h1 class="text-xl md:text-2xl font-bold flex items-center gap-2">
-              <i class="fa-solid fa-briefcase text-secondary"></i>
-              ProGen ATS
+              <i class="fa-solid fa-file-signature text-secondary"></i>
+              SmartDoc Pro
             </h1>
-            <p class="text-xs text-blue-300 mt-1">Professional CV Maker</p>
+            <p class="text-xs text-blue-300 mt-1">CV & Surat Generator</p>
           </div>
           <button
             onclick="toggleSidebar()"
@@ -152,6 +152,36 @@
           </button>
           <button
             onclick="
+              switchView('add-sick');
+              resetSickForm();
+            "
+            class="w-full flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-secondary transition-colors text-left menu-btn"
+            id="menu-add-sick"
+          >
+            <i class="fa-solid fa-notes-medical w-5"></i> Surat Izin / Sakit
+          </button>
+          <button
+            onclick="
+              switchView('add-invitation');
+              resetInvitationForm();
+            "
+            class="w-full flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-secondary transition-colors text-left menu-btn"
+            id="menu-add-invitation"
+          >
+            <i class="fa-solid fa-envelope-open w-5"></i> Surat Undangan
+          </button>
+          <button
+            onclick="
+              switchView('add-notification');
+              resetNotificationForm();
+            "
+            class="w-full flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-secondary transition-colors text-left menu-btn"
+            id="menu-add-notification"
+          >
+            <i class="fa-solid fa-bullhorn w-5"></i> Surat Pemberitahuan
+          </button>
+          <button
+            onclick="
               switchView('history-other');
               renderOtherHistory();
             "
@@ -176,7 +206,7 @@
         <div
           class="p-4 border-t border-blue-800 text-xs text-center text-blue-200"
         >
-          &copy; 2026 ProGen ATS v1.0
+          &copy; 2026 SmartDoc Pro v1.0
         </div>
       </aside>
 
@@ -1823,6 +1853,259 @@
                 >
                   <div id="preview-resign-a4" class="a4-container"></div>
                 </div>
+              </div>
+            </div>
+          </div>
+
+          <div id="view-add-sick" class="view-section hidden-view lg:h-full">
+            <div class="flex flex-col lg:flex-row gap-4 lg:gap-6 h-full">
+              <div class="w-full lg:w-1/2 bg-tertiary rounded-xl shadow-md flex flex-col h-[65vh] lg:h-full overflow-hidden border border-gray-200">
+                <div class="p-4 bg-gray-50 border-b flex justify-between items-center">
+                  <h3 class="font-bold text-primary text-sm lg:text-base">Formulir Surat Izin / Sakit</h3>
+                  <div class="flex items-center">
+                    <span id="sk-autosave-indicator" class="text-xs text-gray-400 mr-3 italic"></span>
+                    <button onclick="saveOtherLetter('sick')" class="bg-primary text-tertiary px-3 lg:px-4 py-1.5 rounded text-sm hover:bg-blue-800 transition">
+                      <i class="fa-solid fa-save mr-1"></i> Simpan
+                    </button>
+                  </div>
+                </div>
+                <div class="p-4 lg:p-6 overflow-y-auto flex-1 space-y-6" id="sick-form-container">
+                  <input type="hidden" id="sk-id" />
+                  <section>
+                    <h4 class="text-base lg:text-lg font-bold text-secondary border-b border-orange-200 pb-2 mb-4">A. Header & Tujuan</h4>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div><label class="block text-sm font-medium mb-1">Tanggal Pembuatan *</label><input type="date" id="sk-date-input" class="w-full border rounded p-2 text-sm" oninput="updateSickPreview()"/></div>
+                      <div><label class="block text-sm font-medium mb-1">Kota/Kab *</label><input type="text" id="sk-city" class="w-full border rounded p-2 text-sm" oninput="updateSickPreview()" placeholder="Jakarta"/></div>
+                      <div class="col-span-1 md:col-span-2"><label class="block text-sm font-medium mb-1">Ditujukan Ke (Yth.) *</label><input type="text" id="sk-to" class="w-full border rounded p-2 text-sm" oninput="updateSickPreview()" placeholder="HRD Manager / Wali Kelas"/></div>
+                      <div class="col-span-1 md:col-span-2"><label class="block text-sm font-medium mb-1">Nama Instansi/Perusahaan *</label><input type="text" id="sk-company" class="w-full border rounded p-2 text-sm" oninput="updateSickPreview()" placeholder="PT Teknologi Gemilang"/></div>
+                    </div>
+                  </section>
+                  <section>
+                    <h4 class="text-base lg:text-lg font-bold text-secondary border-b border-orange-200 pb-2 mb-4">B. Data Diri</h4>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div class="col-span-1 md:col-span-2"><label class="block text-sm font-medium mb-1">Nama Lengkap *</label><input type="text" id="sk-name" class="w-full border rounded p-2 text-sm" oninput="updateSickPreview()" placeholder="Jhon Doe"/></div>
+                      <div><label class="block text-sm font-medium mb-1">ID/NIK/NIS *</label><input type="text" id="sk-nik" class="w-full border rounded p-2 text-sm" oninput="updateSickPreview()" placeholder="123456789"/></div>
+                      <div><label class="block text-sm font-medium mb-1">Jabatan/Kelas *</label><input type="text" id="sk-position" class="w-full border rounded p-2 text-sm" oninput="updateSickPreview()" placeholder="Software Engineer / Kelas 12A"/></div>
+                    </div>
+                  </section>
+                  <section>
+                    <h4 class="text-base lg:text-lg font-bold text-secondary border-b border-orange-200 pb-2 mb-4">C. Detail Izin</h4>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div><label class="block text-sm font-medium mb-1">Tanggal Mulai *</label><input type="date" id="sk-start" class="w-full border rounded p-2 text-sm" oninput="updateSickPreview()"/></div>
+                      <div><label class="block text-sm font-medium mb-1">Tanggal Selesai *</label><input type="date" id="sk-end" class="w-full border rounded p-2 text-sm" oninput="updateSickPreview()"/></div>
+                      <div class="col-span-1 md:col-span-2">
+                        <label class="block text-sm font-medium mb-1">Alasan Izin/Sakit *</label>
+                        <div class="rtf-container">
+                          <div class="rtf-toolbar">
+                            <button type="button" data-command="bold" onclick="document.execCommand('bold', false, null); updateSickPreview();" title="Tebal"><i class="fa-solid fa-bold"></i></button>
+                            <button type="button" data-command="italic" onclick="document.execCommand('italic', false, null); updateSickPreview();" title="Miring"><i class="fa-solid fa-italic"></i></button>
+                            <button type="button" data-command="underline" onclick="document.execCommand('underline', false, null); updateSickPreview();" title="Garis Bawah"><i class="fa-solid fa-underline"></i></button>
+                          </div>
+                          <div id="sk-reason" class="rtf-editor min-h-[5rem]" contenteditable="true" data-placeholder="Karena sakit demam berdarah dan membutuhkan istirahat..." oninput="updateSickPreview()"></div>
+                        </div>
+                      </div>
+                    </div>
+                  </section>
+                </div>
+              </div>
+              <div class="w-full lg:w-1/2 flex flex-col h-[65vh] lg:h-full relative">
+                <div class="flex justify-between items-center mb-2 px-2">
+                  <h3 class="font-bold text-gray-700 text-sm lg:text-base"><i class="fa-solid fa-eye text-primary"></i> Live Preview A4</h3>
+                  <div class="flex gap-2">
+                    <button onclick="downloadDOCX('preview-sick-a4', 'Surat_Izin')" class="bg-blue-600 hover:bg-blue-700 text-tertiary px-3 lg:px-4 py-1.5 rounded-lg font-medium shadow-md transition-all text-sm"><i class="fa-solid fa-file-word mr-1"></i> DOCX</button>
+                    <button onclick="downloadPDF('preview-sick-a4', 'Surat_Izin')" class="bg-secondary hover:bg-orange-600 text-tertiary px-3 lg:px-4 py-1.5 rounded-lg font-medium shadow-md transition-all text-sm"><i class="fa-solid fa-print mr-1"></i> Cetak / PDF</button>
+                  </div>
+                </div>
+                <div class="preview-wrapper flex-1 bg-gray-200 p-2 lg:p-4 rounded-xl shadow-inner border border-gray-300"><div id="preview-sick-a4" class="a4-container"></div></div>
+              </div>
+            </div>
+          </div>
+
+          <div id="view-add-invitation" class="view-section hidden-view lg:h-full">
+            <div class="flex flex-col lg:flex-row gap-4 lg:gap-6 h-full">
+              <div class="w-full lg:w-1/2 bg-tertiary rounded-xl shadow-md flex flex-col h-[65vh] lg:h-full overflow-hidden border border-gray-200">
+                <div class="p-4 bg-gray-50 border-b flex justify-between items-center">
+                  <h3 class="font-bold text-primary text-sm lg:text-base">Formulir Surat Undangan</h3>
+                  <div class="flex items-center">
+                    <span id="inv-autosave-indicator" class="text-xs text-gray-400 mr-3 italic"></span>
+                    <button onclick="saveOtherLetter('invitation')" class="bg-primary text-tertiary px-3 lg:px-4 py-1.5 rounded text-sm hover:bg-blue-800 transition">
+                      <i class="fa-solid fa-save mr-1"></i> Simpan
+                    </button>
+                  </div>
+                </div>
+                <div class="p-4 lg:p-6 overflow-y-auto flex-1 space-y-6" id="inv-form-container">
+                  <input type="hidden" id="inv-id" />
+                  <section>
+                    <h4 class="text-base lg:text-lg font-bold text-secondary border-b border-orange-200 pb-2 mb-4">A. Kop Surat</h4>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div class="col-span-1">
+                        <label class="block text-sm font-medium mb-1">Logo Kop Surat Kiri (Opsional)</label>
+                        <input type="file" id="inv-kop-logo" accept="image/*" class="w-full border rounded p-1 text-sm" onchange="handleImageUploadBase64(event, function(base64) { document.getElementById('inv-kop-logo-data').value = base64; updateInvitationPreview(); }, 300)"/>
+                        <input type="hidden" id="inv-kop-logo-data" />
+                      </div>
+                      <div class="col-span-1">
+                        <label class="block text-sm font-medium mb-1">Logo Kop Surat Kanan (Opsional)</label>
+                        <input type="file" id="inv-kop-logo-right" accept="image/*" class="w-full border rounded p-1 text-sm" onchange="handleImageUploadBase64(event, function(base64) { document.getElementById('inv-kop-logo-right-data').value = base64; updateInvitationPreview(); }, 300)"/>
+                        <input type="hidden" id="inv-kop-logo-right-data" />
+                      </div>
+                      <div class="col-span-1 md:col-span-2"><label class="block text-sm font-medium mb-1">Nama Instansi / Organisasi *</label><input type="text" id="inv-kop-name" class="w-full border rounded p-2 text-sm" oninput="updateInvitationPreview()" placeholder="PT Inovasi Mandiri"/></div>
+                      <div class="col-span-1 md:col-span-2"><label class="block text-sm font-medium mb-1">Alamat Instansi *</label><input type="text" id="inv-kop-address" class="w-full border rounded p-2 text-sm" oninput="updateInvitationPreview()" placeholder="Jl. Sudirman No 10, Jakarta Selatan"/></div>
+                      <div class="col-span-1 md:col-span-2"><label class="block text-sm font-medium mb-1">Kontak (Telp/Email/Web)</label><input type="text" id="inv-kop-contact" class="w-full border rounded p-2 text-sm" oninput="updateInvitationPreview()" placeholder="Telp: (021) 123456 | Web: www.inovasi.com"/></div>
+                    </div>
+                  </section>
+                  <section>
+                    <h4 class="text-base lg:text-lg font-bold text-secondary border-b border-orange-200 pb-2 mb-4">B. Detail Surat</h4>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div><label class="block text-sm font-medium mb-1">Nomor Surat</label><input type="text" id="inv-number" class="w-full border rounded p-2 text-sm" oninput="updateInvitationPreview()" placeholder="001/INV/2026"/></div>
+                      <div><label class="block text-sm font-medium mb-1">Lampiran</label><input type="text" id="inv-attachment" class="w-full border rounded p-2 text-sm" oninput="updateInvitationPreview()" placeholder="1 Berkas"/></div>
+                      <div><label class="block text-sm font-medium mb-1">Perihal *</label><input type="text" id="inv-subject" class="w-full border rounded p-2 text-sm" oninput="updateInvitationPreview()" placeholder="Undangan Rapat Evaluasi"/></div>
+                      <div><label class="block text-sm font-medium mb-1">Tanggal Pembuatan *</label><input type="date" id="inv-date-input" class="w-full border rounded p-2 text-sm" oninput="updateInvitationPreview()"/></div>
+                      <div><label class="block text-sm font-medium mb-1">Kota/Tempat Dibuat *</label><input type="text" id="inv-city" class="w-full border rounded p-2 text-sm" oninput="updateInvitationPreview()" placeholder="Jakarta"/></div>
+                      <div class="col-span-1 md:col-span-2"><label class="block text-sm font-medium mb-1">Ditujukan Kepada (Yth.) *</label><input type="text" id="inv-to" class="w-full border rounded p-2 text-sm" oninput="updateInvitationPreview()" placeholder="Seluruh Karyawan / Bpk. Andi"/></div>
+                      <div class="col-span-1 md:col-span-2"><label class="block text-sm font-medium mb-1">Di (Tempat)</label><input type="text" id="inv-to-place" class="w-full border rounded p-2 text-sm" oninput="updateInvitationPreview()" placeholder="Tempat"/></div>
+                    </div>
+                  </section>
+                  <section>
+                    <h4 class="text-base lg:text-lg font-bold text-secondary border-b border-orange-200 pb-2 mb-4">C. Isi Undangan</h4>
+                    <div class="space-y-4">
+                      <div><label class="block text-sm font-medium mb-1">Kalimat Pembuka *</label><textarea id="inv-opening" class="w-full border rounded p-2 text-sm h-16" oninput="updateInvitationPreview()" placeholder="Dengan hormat,\nSehubungan dengan akan diadakannya evaluasi kinerja semester ganjil..."></textarea></div>
+                      <div><label class="block text-sm font-medium mb-1">Pelaksanaan (Hari/Tgl) *</label><input type="text" id="inv-event-date" class="w-full border rounded p-2 text-sm" oninput="updateInvitationPreview()" placeholder="Senin, 20 Juli 2026"/></div>
+                      <div><label class="block text-sm font-medium mb-1">Waktu (Jam) *</label><input type="text" id="inv-event-time" class="w-full border rounded p-2 text-sm" oninput="updateInvitationPreview()" placeholder="09.00 - Selesai"/></div>
+                      <div><label class="block text-sm font-medium mb-1">Tempat Pelaksanaan *</label><input type="text" id="inv-event-place" class="w-full border rounded p-2 text-sm" oninput="updateInvitationPreview()" placeholder="Ruang Rapat Utama Lt. 2"/></div>
+                      <div><label class="block text-sm font-medium mb-1">Kalimat Penutup *</label><textarea id="inv-closing" class="w-full border rounded p-2 text-sm h-16" oninput="updateInvitationPreview()" placeholder="Demikian undangan ini kami sampaikan. Atas perhatian dan kehadirannya, kami ucapkan terima kasih."></textarea></div>
+                    </div>
+                  </section>
+                  <section>
+                    <div class="flex justify-between items-center border-b border-orange-200 pb-2 mb-4">
+                      <h4 class="text-base lg:text-lg font-bold text-secondary">D. Tanda Tangan Utama</h4>
+                      <button onclick="addSignatureField('inv', 'main')" class="text-primary text-sm hover:underline ml-2"><i class="fa-solid fa-plus"></i> Tambah</button>
+                    </div>
+                    <div id="container-inv-main-sig" class="flex flex-col gap-3"></div>
+                  </section>
+                  <section>
+                    <div class="flex justify-between items-center border-b border-orange-200 pb-2 mb-4">
+                      <h4 class="text-base lg:text-lg font-bold text-secondary">E. Tanda Tangan Mengetahui</h4>
+                      <button onclick="addSignatureField('inv', 'ack')" class="text-primary text-sm hover:underline ml-2"><i class="fa-solid fa-plus"></i> Tambah</button>
+                    </div>
+                    <div id="container-inv-ack-sig" class="flex flex-col gap-3"></div>
+                  </section>
+                  <section>
+                    <h4 class="text-base lg:text-lg font-bold text-secondary border-b border-orange-200 pb-2 mb-4">F. Tembusan</h4>
+                    <div>
+                      <label class="block text-sm font-medium mb-1">Isi Tembusan (Opsional)</label>
+                      <textarea id="inv-cc" class="w-full border rounded p-2 text-sm h-16" oninput="updateInvitationPreview()" placeholder="1. Direktur Utama\n2. HRD Manager"></textarea>
+                    </div>
+                  </section>
+                </div>
+              </div>
+              <div class="w-full lg:w-1/2 flex flex-col h-[65vh] lg:h-full relative">
+                <div class="flex justify-between items-center mb-2 px-2">
+                  <h3 class="font-bold text-gray-700 text-sm lg:text-base"><i class="fa-solid fa-eye text-primary"></i> Live Preview A4</h3>
+                  <div class="flex gap-2">
+                    <button onclick="downloadDOCX('preview-invitation-a4', 'Surat_Undangan')" class="bg-blue-600 hover:bg-blue-700 text-tertiary px-3 lg:px-4 py-1.5 rounded-lg font-medium shadow-md transition-all text-sm"><i class="fa-solid fa-file-word mr-1"></i> DOCX</button>
+                    <button onclick="downloadPDF('preview-invitation-a4', 'Surat_Undangan')" class="bg-secondary hover:bg-orange-600 text-tertiary px-3 lg:px-4 py-1.5 rounded-lg font-medium shadow-md transition-all text-sm"><i class="fa-solid fa-print mr-1"></i> Cetak / PDF</button>
+                  </div>
+                </div>
+                <div class="preview-wrapper flex-1 bg-gray-200 p-2 lg:p-4 rounded-xl shadow-inner border border-gray-300"><div id="preview-invitation-a4" class="a4-container"></div></div>
+              </div>
+            </div>
+          </div>
+
+          <div id="view-add-notification" class="view-section hidden-view lg:h-full">
+            <div class="flex flex-col lg:flex-row gap-4 lg:gap-6 h-full">
+              <div class="w-full lg:w-1/2 bg-tertiary rounded-xl shadow-md flex flex-col h-[65vh] lg:h-full overflow-hidden border border-gray-200">
+                <div class="p-4 bg-gray-50 border-b flex justify-between items-center">
+                  <h3 class="font-bold text-primary text-sm lg:text-base">Formulir Surat Pemberitahuan</h3>
+                  <div class="flex items-center">
+                    <span id="notif-autosave-indicator" class="text-xs text-gray-400 mr-3 italic"></span>
+                    <button onclick="saveOtherLetter('notification')" class="bg-primary text-tertiary px-3 lg:px-4 py-1.5 rounded text-sm hover:bg-blue-800 transition">
+                      <i class="fa-solid fa-save mr-1"></i> Simpan
+                    </button>
+                  </div>
+                </div>
+                <div class="p-4 lg:p-6 overflow-y-auto flex-1 space-y-6" id="notif-form-container">
+                  <input type="hidden" id="notif-id" />
+                  <section>
+                    <h4 class="text-base lg:text-lg font-bold text-secondary border-b border-orange-200 pb-2 mb-4">A. Kop Surat</h4>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div class="col-span-1">
+                        <label class="block text-sm font-medium mb-1">Logo Kop Surat Kiri (Opsional)</label>
+                        <input type="file" id="notif-kop-logo" accept="image/*" class="w-full border rounded p-1 text-sm" onchange="handleImageUploadBase64(event, function(base64) { document.getElementById('notif-kop-logo-data').value = base64; updateNotificationPreview(); }, 300)"/>
+                        <input type="hidden" id="notif-kop-logo-data" />
+                      </div>
+                      <div class="col-span-1">
+                        <label class="block text-sm font-medium mb-1">Logo Kop Surat Kanan (Opsional)</label>
+                        <input type="file" id="notif-kop-logo-right" accept="image/*" class="w-full border rounded p-1 text-sm" onchange="handleImageUploadBase64(event, function(base64) { document.getElementById('notif-kop-logo-right-data').value = base64; updateNotificationPreview(); }, 300)"/>
+                        <input type="hidden" id="notif-kop-logo-right-data" />
+                      </div>
+                      <div class="col-span-1 md:col-span-2"><label class="block text-sm font-medium mb-1">Nama Instansi / Organisasi *</label><input type="text" id="notif-kop-name" class="w-full border rounded p-2 text-sm" oninput="updateNotificationPreview()" placeholder="PT Inovasi Mandiri"/></div>
+                      <div class="col-span-1 md:col-span-2"><label class="block text-sm font-medium mb-1">Alamat Instansi *</label><input type="text" id="notif-kop-address" class="w-full border rounded p-2 text-sm" oninput="updateNotificationPreview()" placeholder="Jl. Sudirman No 10, Jakarta Selatan"/></div>
+                      <div class="col-span-1 md:col-span-2"><label class="block text-sm font-medium mb-1">Kontak (Telp/Email/Web)</label><input type="text" id="notif-kop-contact" class="w-full border rounded p-2 text-sm" oninput="updateNotificationPreview()" placeholder="Telp: (021) 123456 | Web: www.inovasi.com"/></div>
+                    </div>
+                  </section>
+                  <section>
+                    <h4 class="text-base lg:text-lg font-bold text-secondary border-b border-orange-200 pb-2 mb-4">B. Detail Surat</h4>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div><label class="block text-sm font-medium mb-1">Nomor Surat</label><input type="text" id="notif-number" class="w-full border rounded p-2 text-sm" oninput="updateNotificationPreview()" placeholder="002/PENG/2026"/></div>
+                      <div><label class="block text-sm font-medium mb-1">Lampiran</label><input type="text" id="notif-attachment" class="w-full border rounded p-2 text-sm" oninput="updateNotificationPreview()" placeholder="-"/></div>
+                      <div><label class="block text-sm font-medium mb-1">Perihal *</label><input type="text" id="notif-subject" class="w-full border rounded p-2 text-sm" oninput="updateNotificationPreview()" placeholder="Pemberitahuan Libur Bersama"/></div>
+                      <div><label class="block text-sm font-medium mb-1">Tanggal Pembuatan *</label><input type="date" id="notif-date-input" class="w-full border rounded p-2 text-sm" oninput="updateNotificationPreview()"/></div>
+                      <div><label class="block text-sm font-medium mb-1">Kota/Tempat Dibuat *</label><input type="text" id="notif-city" class="w-full border rounded p-2 text-sm" oninput="updateNotificationPreview()" placeholder="Jakarta"/></div>
+                      <div class="col-span-1 md:col-span-2"><label class="block text-sm font-medium mb-1">Ditujukan Kepada (Yth.) *</label><input type="text" id="notif-to" class="w-full border rounded p-2 text-sm" oninput="updateNotificationPreview()" placeholder="Seluruh Karyawan"/></div>
+                      <div class="col-span-1 md:col-span-2"><label class="block text-sm font-medium mb-1">Di (Tempat)</label><input type="text" id="notif-to-place" class="w-full border rounded p-2 text-sm" oninput="updateNotificationPreview()" placeholder="Tempat"/></div>
+                    </div>
+                  </section>
+                  <section>
+                    <h4 class="text-base lg:text-lg font-bold text-secondary border-b border-orange-200 pb-2 mb-4">C. Isi Pemberitahuan</h4>
+                    <div class="space-y-4">
+                      <div><label class="block text-sm font-medium mb-1">Kalimat Pembuka *</label><textarea id="notif-opening" class="w-full border rounded p-2 text-sm h-16" oninput="updateNotificationPreview()" placeholder="Dengan hormat,\nSehubungan dengan hari libur nasional..."></textarea></div>
+                      <div class="col-span-1 md:col-span-2">
+                        <label class="block text-sm font-medium mb-1">Isi Detail / Pelaksanaan *</label>
+                        <div class="rtf-container">
+                          <div class="rtf-toolbar">
+                            <button type="button" data-command="bold" onclick="document.execCommand('bold', false, null); updateNotificationPreview();" title="Tebal"><i class="fa-solid fa-bold"></i></button>
+                            <button type="button" data-command="italic" onclick="document.execCommand('italic', false, null); updateNotificationPreview();" title="Miring"><i class="fa-solid fa-italic"></i></button>
+                            <button type="button" data-command="underline" onclick="document.execCommand('underline', false, null); updateNotificationPreview();" title="Garis Bawah"><i class="fa-solid fa-underline"></i></button>
+                            <button type="button" data-command="insertUnorderedList" onclick="document.execCommand('insertUnorderedList', false, null); updateNotificationPreview();" title="Daftar Bullet"><i class="fa-solid fa-list-ul"></i></button>
+                          </div>
+                          <div id="notif-content" class="rtf-editor min-h-[5rem]" contenteditable="true" data-placeholder="Maka dengan ini kami beritahukan bahwa:\n1. Kegiatan kantor ditiadakan pada...\n2. Kembali masuk pada..." oninput="updateNotificationPreview()"></div>
+                        </div>
+                      </div>
+                      <div><label class="block text-sm font-medium mb-1">Kalimat Penutup *</label><textarea id="notif-closing" class="w-full border rounded p-2 text-sm h-16" oninput="updateNotificationPreview()" placeholder="Demikian surat pemberitahuan ini kami sampaikan. Harap maklum adanya."></textarea></div>
+                    </div>
+                  </section>
+                  <section>
+                    <div class="flex justify-between items-center border-b border-orange-200 pb-2 mb-4">
+                      <h4 class="text-base lg:text-lg font-bold text-secondary">D. Tanda Tangan Utama</h4>
+                      <button onclick="addSignatureField('notif', 'main')" class="text-primary text-sm hover:underline ml-2"><i class="fa-solid fa-plus"></i> Tambah</button>
+                    </div>
+                    <div id="container-notif-main-sig" class="flex flex-col gap-3"></div>
+                  </section>
+                  <section>
+                    <div class="flex justify-between items-center border-b border-orange-200 pb-2 mb-4">
+                      <h4 class="text-base lg:text-lg font-bold text-secondary">E. Tanda Tangan Mengetahui</h4>
+                      <button onclick="addSignatureField('notif', 'ack')" class="text-primary text-sm hover:underline ml-2"><i class="fa-solid fa-plus"></i> Tambah</button>
+                    </div>
+                    <div id="container-notif-ack-sig" class="flex flex-col gap-3"></div>
+                  </section>
+                  <section>
+                    <h4 class="text-base lg:text-lg font-bold text-secondary border-b border-orange-200 pb-2 mb-4">F. Tembusan</h4>
+                    <div>
+                      <label class="block text-sm font-medium mb-1">Isi Tembusan (Opsional)</label>
+                      <textarea id="notif-cc" class="w-full border rounded p-2 text-sm h-16" oninput="updateNotificationPreview()" placeholder="1. Direktur Utama\n2. HRD Manager"></textarea>
+                    </div>
+                  </section>
+                </div>
+              </div>
+              <div class="w-full lg:w-1/2 flex flex-col h-[65vh] lg:h-full relative">
+                <div class="flex justify-between items-center mb-2 px-2">
+                  <h3 class="font-bold text-gray-700 text-sm lg:text-base"><i class="fa-solid fa-eye text-primary"></i> Live Preview A4</h3>
+                  <div class="flex gap-2">
+                    <button onclick="downloadDOCX('preview-notification-a4', 'Surat_Pemberitahuan')" class="bg-blue-600 hover:bg-blue-700 text-tertiary px-3 lg:px-4 py-1.5 rounded-lg font-medium shadow-md transition-all text-sm"><i class="fa-solid fa-file-word mr-1"></i> DOCX</button>
+                    <button onclick="downloadPDF('preview-notification-a4', 'Surat_Pemberitahuan')" class="bg-secondary hover:bg-orange-600 text-tertiary px-3 lg:px-4 py-1.5 rounded-lg font-medium shadow-md transition-all text-sm"><i class="fa-solid fa-print mr-1"></i> Cetak / PDF</button>
+                  </div>
+                </div>
+                <div class="preview-wrapper flex-1 bg-gray-200 p-2 lg:p-4 rounded-xl shadow-inner border border-gray-300"><div id="preview-notification-a4" class="a4-container"></div></div>
               </div>
             </div>
           </div>

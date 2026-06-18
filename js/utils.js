@@ -97,3 +97,30 @@ function validateDates(start, end) {
   if (!start || !end) return true;
   return new Date(start) <= new Date(end);
 }
+
+function formatDateObj(val) {
+  if (!val) return "(Belum diisi)";
+  const parts = val.split("-");
+  if (parts.length !== 3) return val;
+  const year = parts[0];
+  const month = parts[1];
+  const day = parts[2];
+  const months = [
+    "Januari", "Februari", "Maret", "April", "Mei", "Juni", 
+    "Juli", "Agustus", "September", "Oktober", "November", "Desember"
+  ];
+  return `${parseInt(day, 10)} ${months[parseInt(month, 10) - 1]} ${year}`;
+}
+
+function formatDateWithDay(val) {
+  if (!val) return "(Belum diisi)";
+  const parts = val.split("-");
+  if (parts.length !== 3) return val;
+  const year = parseInt(parts[0], 10);
+  const month = parseInt(parts[1], 10) - 1;
+  const day = parseInt(parts[2], 10);
+  const dateObj = new Date(year, month, day);
+  const days = ["Minggu", "Senin", "Selasa", "Rabu", "Kamis", "Jumat", "Sabtu"];
+  const dayName = days[dateObj.getDay()];
+  return `${dayName}, ${formatDateObj(val)}`;
+}

@@ -318,50 +318,20 @@ function deleteLetter(id) {
 }
 
 function saveOtherLetter(type, isAutoSave = false) {
-  const idInput =
-    type === "leave"
-      ? document.getElementById("lv-id").value
-      : document.getElementById("rs-id").value;
-  const generatedId = idInput || generateId();
-  const nameVal =
-    type === "leave"
-      ? document.getElementById("lv-name").value.trim()
-      : document.getElementById("rs-name").value.trim();
-  const indicatorId =
-    type === "leave" ? "lv-autosave-indicator" : "rs-autosave-indicator";
-
-  if (!nameVal) {
-    if (!isAutoSave) showToast("Nama Lengkap wajib diisi!", "error");
-    else document.getElementById(indicatorId).innerText = "";
-    return;
-  }
-
-  if (!isAutoSave && type === "leave") {
-    const startVal = document.getElementById("lv-start").value;
-    const endVal = document.getElementById("lv-end").value;
-    if (startVal && endVal && !validateDates(startVal, endVal)) {
-      showToast(
-        "Tanggal Selesai Cuti tidak logis karena mendahului Tanggal Mulai!",
-        "error",
-      );
-      return;
-    }
-  }
-
-  let letterObj = {
-    id: generatedId,
-    type: type,
-    name: nameVal,
-    date: new Date().toISOString(),
-    form: {},
-  };
+  let idInput = "";
+  let nameVal = "";
+  let indicatorId = "";
+  let subject = "";
+  let formObj = {};
 
   if (type === "leave") {
+    idInput = document.getElementById("lv-id").value;
+    nameVal = document.getElementById("lv-name").value.trim();
+    indicatorId = "lv-autosave-indicator";
+    subject = "Surat Permohonan Cuti";
     let reasonHtml = document.getElementById("lv-reason").innerHTML.trim();
     if (reasonHtml === "<br>") reasonHtml = "";
-
-    letterObj.subject = "Surat Permohonan Cuti";
-    letterObj.form = {
+    formObj = {
       city: document.getElementById("lv-city").value,
       dateInput: document.getElementById("lv-date-input").value,
       to: document.getElementById("lv-to").value,
@@ -374,12 +344,14 @@ function saveOtherLetter(type, isAutoSave = false) {
       end: document.getElementById("lv-end").value,
       reason: reasonHtml,
     };
-  } else {
+  } else if (type === "resign") {
+    idInput = document.getElementById("rs-id").value;
+    nameVal = document.getElementById("rs-name").value.trim();
+    indicatorId = "rs-autosave-indicator";
+    subject = "Surat Pengunduran Diri (Resign)";
     let reasonHtml = document.getElementById("rs-reason").innerHTML.trim();
     if (reasonHtml === "<br>") reasonHtml = "";
-
-    letterObj.subject = "Surat Pengunduran Diri (Resign)";
-    letterObj.form = {
+    formObj = {
       city: document.getElementById("rs-city").value,
       dateInput: document.getElementById("rs-date-input").value,
       to: document.getElementById("rs-to").value,
@@ -390,7 +362,126 @@ function saveOtherLetter(type, isAutoSave = false) {
       effective: document.getElementById("rs-effective").value,
       reason: reasonHtml,
     };
+  } else if (type === "sick") {
+    idInput = document.getElementById("sk-id").value;
+    nameVal = document.getElementById("sk-name").value.trim();
+    indicatorId = "sk-autosave-indicator";
+    subject = "Surat Izin / Sakit";
+    let reasonHtml = document.getElementById("sk-reason").innerHTML.trim();
+    if (reasonHtml === "<br>") reasonHtml = "";
+    formObj = {
+      city: document.getElementById("sk-city").value,
+      dateInput: document.getElementById("sk-date-input").value,
+      to: document.getElementById("sk-to").value,
+      company: document.getElementById("sk-company").value,
+      name: nameVal,
+      nik: document.getElementById("sk-nik").value,
+      position: document.getElementById("sk-position").value,
+      start: document.getElementById("sk-start").value,
+      end: document.getElementById("sk-end").value,
+      reason: reasonHtml,
+    };
+  } else if (type === "invitation") {
+    idInput = document.getElementById("inv-id").value;
+    const kopNameInput = document.getElementById("inv-kop-name").value.trim();
+    nameVal = kopNameInput || "Surat Undangan";
+    indicatorId = "inv-autosave-indicator";
+    subject = document.getElementById("inv-subject").value || "Surat Undangan";
+    formObj = {
+      kopName: document.getElementById("inv-kop-name").value,
+      kopLogo: document.getElementById("inv-kop-logo-data") ? document.getElementById("inv-kop-logo-data").value : "",
+      kopLogoRight: document.getElementById("inv-kop-logo-right-data") ? document.getElementById("inv-kop-logo-right-data").value : "",
+      kopAddress: document.getElementById("inv-kop-address").value,
+      kopContact: document.getElementById("inv-kop-contact").value,
+      number: document.getElementById("inv-number").value,
+      attachment: document.getElementById("inv-attachment").value,
+      subject: document.getElementById("inv-subject").value,
+      dateInput: document.getElementById("inv-date-input").value,
+      city: document.getElementById("inv-city").value,
+      to: document.getElementById("inv-to").value,
+      toPlace: document.getElementById("inv-to-place").value,
+      opening: document.getElementById("inv-opening").value,
+      eventDate: document.getElementById("inv-event-date").value,
+      eventTime: document.getElementById("inv-event-time").value,
+      eventPlace: document.getElementById("inv-event-place").value,
+      closing: document.getElementById("inv-closing").value,
+      mainSigs: getSignatureData("inv", "main"),
+      ackSigs: getSignatureData("inv", "ack"),
+      cc: document.getElementById("inv-cc").value,
+    };
+  } else if (type === "notification") {
+    idInput = document.getElementById("notif-id").value;
+    const kopNameInput = document.getElementById("notif-kop-name").value.trim();
+    nameVal = kopNameInput || "Surat Pemberitahuan";
+    indicatorId = "notif-autosave-indicator";
+    subject = document.getElementById("notif-subject").value || "Surat Pemberitahuan";
+    let contentHtml = document.getElementById("notif-content").innerHTML.trim();
+    if (contentHtml === "<br>") contentHtml = "";
+    formObj = {
+      kopName: document.getElementById("notif-kop-name").value,
+      kopLogo: document.getElementById("notif-kop-logo-data") ? document.getElementById("notif-kop-logo-data").value : "",
+      kopLogoRight: document.getElementById("notif-kop-logo-right-data") ? document.getElementById("notif-kop-logo-right-data").value : "",
+      kopAddress: document.getElementById("notif-kop-address").value,
+      kopContact: document.getElementById("notif-kop-contact").value,
+      number: document.getElementById("notif-number").value,
+      attachment: document.getElementById("notif-attachment").value,
+      subject: document.getElementById("notif-subject").value,
+      dateInput: document.getElementById("notif-date-input").value,
+      city: document.getElementById("notif-city").value,
+      to: document.getElementById("notif-to").value,
+      toPlace: document.getElementById("notif-to-place").value,
+      opening: document.getElementById("notif-opening").value,
+      content: contentHtml,
+      closing: document.getElementById("notif-closing").value,
+      mainSigs: getSignatureData("notif", "main"),
+      ackSigs: getSignatureData("notif", "ack"),
+      cc: document.getElementById("notif-cc").value,
+    };
   }
+
+  const generatedId = idInput || generateId();
+
+  if (!nameVal && (type === "leave" || type === "resign" || type === "sick")) {
+    if (!isAutoSave) showToast("Nama Lengkap wajib diisi!", "error");
+    else {
+      const ind = document.getElementById(indicatorId);
+      if(ind) ind.innerText = "";
+    }
+    return;
+  }
+
+  if ((type === "invitation" || type === "notification")) {
+    const isKopEmpty = type === "invitation" ? !document.getElementById("inv-kop-name").value.trim() : !document.getElementById("notif-kop-name").value.trim();
+    if (isKopEmpty) {
+      if (!isAutoSave) showToast("Nama Instansi / Organisasi wajib diisi!", "error");
+      else {
+        const ind = document.getElementById(indicatorId);
+        if(ind) ind.innerText = "";
+      }
+      return;
+    }
+  }
+
+  if (!isAutoSave && (type === "leave" || type === "sick")) {
+    const startVal = document.getElementById(type === "leave" ? "lv-start" : "sk-start").value;
+    const endVal = document.getElementById(type === "leave" ? "lv-end" : "sk-end").value;
+    if (startVal && endVal && !validateDates(startVal, endVal)) {
+      showToast(
+        "Tanggal Selesai tidak logis karena mendahului Tanggal Mulai!",
+        "error",
+      );
+      return;
+    }
+  }
+
+  let letterObj = {
+    id: generatedId,
+    type: type,
+    name: nameVal,
+    subject: subject,
+    date: new Date().toISOString(),
+    form: formObj,
+  };
 
   if (idInput) {
     const idx = otherLetterData.findIndex((l) => l.id === idInput);
@@ -398,7 +489,10 @@ function saveOtherLetter(type, isAutoSave = false) {
   } else {
     otherLetterData.push(letterObj);
     if (type === "leave") document.getElementById("lv-id").value = generatedId;
-    else document.getElementById("rs-id").value = generatedId;
+    else if (type === "resign") document.getElementById("rs-id").value = generatedId;
+    else if (type === "sick") document.getElementById("sk-id").value = generatedId;
+    else if (type === "invitation") document.getElementById("inv-id").value = generatedId;
+    else if (type === "notification") document.getElementById("notif-id").value = generatedId;
   }
 
   try {
@@ -414,8 +508,8 @@ function saveOtherLetter(type, isAutoSave = false) {
         hour: "2-digit",
         minute: "2-digit",
       });
-      document.getElementById(indicatorId).innerText =
-        `Tersimpan otomatis ${timeStr}`;
+      const ind = document.getElementById(indicatorId);
+      if(ind) ind.innerText = `Tersimpan otomatis ${timeStr}`;
     } else {
       showToast("Surat Administrasi berhasil diarsipkan!", "success");
       const indicator = document.getElementById(indicatorId);

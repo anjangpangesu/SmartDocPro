@@ -43,6 +43,9 @@ function initApp() {
   updateLetterPreview();
   updateLeavePreview();
   updateResignPreview();
+  resetSickForm();
+  resetInvitationForm();
+  resetNotificationForm();
 
   switchView("dashboard");
 }

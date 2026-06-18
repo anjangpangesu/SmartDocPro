@@ -12,6 +12,9 @@ const views = [
   "history-letter",
   "add-leave",
   "add-resign",
+  "add-sick",
+  "add-invitation",
+  "add-notification",
   "history-other",
 ];
 
@@ -92,8 +95,14 @@ function triggerAutoSaveLetter() {
 let autoSaveTimerOther = null;
 function triggerAutoSaveOther(type) {
   clearTimeout(autoSaveTimerOther);
-  const indicatorId =
-    type === "leave" ? "lv-autosave-indicator" : "rs-autosave-indicator";
+  const indicators = {
+    "leave": "lv-autosave-indicator",
+    "resign": "rs-autosave-indicator",
+    "sick": "sk-autosave-indicator",
+    "invitation": "inv-autosave-indicator",
+    "notification": "notif-autosave-indicator"
+  };
+  const indicatorId = indicators[type];
   const indicator = document.getElementById(indicatorId);
   if (indicator) indicator.innerText = "Menyimpan...";
   autoSaveTimerOther = setTimeout(() => {
@@ -131,6 +140,41 @@ function showToast(message, type = "success") {
     toast.classList.add("toast-leave");
     toast.addEventListener("animationend", () => toast.remove());
   }, 3000);
+}
+
+function handleImageUploadBase64(event, callback, maxSize = 300) {
+  const file = event.target.files[0];
+  if (file) {
+    const reader = new FileReader();
+    reader.onload = function (e) {
+      const img = new Image();
+      img.onload = function () {
+        const canvas = document.createElement("canvas");
+        let width = img.width;
+        let height = img.height;
+
+        if (width > height && width > maxSize) {
+          height *= maxSize / width;
+          width = maxSize;
+        } else if (height > maxSize) {
+          width *= maxSize / height;
+          height = maxSize;
+        }
+
+        canvas.width = width;
+        canvas.height = height;
+        const ctx = canvas.getContext("2d");
+        ctx.drawImage(img, 0, 0, width, height);
+
+        const dataUrl = canvas.toDataURL("image/png");
+        callback(dataUrl);
+      };
+      img.src = e.target.result;
+    };
+    reader.readAsDataURL(file);
+  } else {
+    callback("");
+  }
 }
 
 function handleImageUpload(event, type) {
@@ -202,6 +246,9 @@ function switchView(viewId) {
     "history-letter": "Riwayat Surat Lamaran",
     "add-leave": "Formulir Generator Surat Cuti",
     "add-resign": "Formulir Generator Surat Resign",
+    "add-sick": "Formulir Generator Surat Izin/Sakit",
+    "add-invitation": "Formulir Generator Surat Undangan",
+    "add-notification": "Formulir Generator Surat Pemberitahuan",
     "history-other": "Riwayat Surat Administrasi",
   };
   document.getElementById("page-title").innerText = titles[viewId];
@@ -1462,6 +1509,106 @@ function editOtherLetter(id) {
 
     switchView("add-leave");
     updateLeavePreview();
+  } else if (item.type === "sick") {
+    resetSickForm();
+    document.getElementById("sk-id").value = item.id;
+    document.getElementById("sk-date-input").value = item.form.dateInput || "";
+    document.getElementById("sk-city").value = item.form.city || "";
+    document.getElementById("sk-to").value = item.form.to || "";
+    document.getElementById("sk-company").value = item.form.company || "";
+    document.getElementById("sk-name").value = item.form.name || "";
+    document.getElementById("sk-nik").value = item.form.nik || "";
+    document.getElementById("sk-position").value = item.form.position || "";
+    document.getElementById("sk-start").value = item.form.start || "";
+    document.getElementById("sk-end").value = item.form.end || "";
+
+    const reasonEditor = document.getElementById("sk-reason");
+    if (reasonEditor) reasonEditor.innerHTML = item.form.reason || "";
+
+    switchView("add-sick");
+    updateSickPreview();
+  } else if (item.type === "invitation") {
+    resetInvitationForm();
+    document.getElementById("inv-id").value = item.id;
+    document.getElementById("inv-kop-name").value = item.form.kopName || "";
+    const invLogoDataEl = document.getElementById("inv-kop-logo-data");
+    if (invLogoDataEl) invLogoDataEl.value = item.form.kopLogo || "";
+    const invLogoRightDataEl = document.getElementById("inv-kop-logo-right-data");
+    if (invLogoRightDataEl) invLogoRightDataEl.value = item.form.kopLogoRight || "";
+    document.getElementById("inv-kop-address").value = item.form.kopAddress || "";
+    document.getElementById("inv-kop-contact").value = item.form.kopContact || "";
+    document.getElementById("inv-number").value = item.form.number || "";
+    document.getElementById("inv-attachment").value = item.form.attachment || "";
+    document.getElementById("inv-subject").value = item.form.subject || "";
+    document.getElementById("inv-date-input").value = item.form.dateInput || "";
+    document.getElementById("inv-city").value = item.form.city || "";
+    document.getElementById("inv-to").value = item.form.to || "";
+    document.getElementById("inv-to-place").value = item.form.toPlace || "";
+    document.getElementById("inv-opening").value = item.form.opening || "";
+    document.getElementById("inv-event-date").value = item.form.eventDate || "";
+    document.getElementById("inv-event-time").value = item.form.eventTime || "";
+    document.getElementById("inv-event-place").value = item.form.eventPlace || "";
+    document.getElementById("inv-closing").value = item.form.closing || "";
+    document.getElementById("inv-cc").value = item.form.cc || "";
+    
+    // load sigs
+    const mainContainer = document.getElementById("container-inv-main-sig");
+    mainContainer.innerHTML = "";
+    if (item.form.mainSigs) {
+      item.form.mainSigs.forEach(sig => addSignatureField("inv", "main", sig.name, sig.position, sig.imageBase64, sig.align, sig.place, sig.date, sig.nik));
+    } else {
+      addSignatureField("inv", "main");
+    }
+
+    const ackContainer = document.getElementById("container-inv-ack-sig");
+    ackContainer.innerHTML = "";
+    if (item.form.ackSigs) {
+      item.form.ackSigs.forEach(sig => addSignatureField("inv", "ack", sig.name, sig.position, sig.imageBase64, sig.align, sig.place, sig.date, sig.nik));
+    }
+
+    switchView("add-invitation");
+    updateInvitationPreview();
+  } else if (item.type === "notification") {
+    resetNotificationForm();
+    document.getElementById("notif-id").value = item.id;
+    document.getElementById("notif-kop-name").value = item.form.kopName || "";
+    const notifLogoDataEl = document.getElementById("notif-kop-logo-data");
+    if (notifLogoDataEl) notifLogoDataEl.value = item.form.kopLogo || "";
+    const notifLogoRightDataEl = document.getElementById("notif-kop-logo-right-data");
+    if (notifLogoRightDataEl) notifLogoRightDataEl.value = item.form.kopLogoRight || "";
+    document.getElementById("notif-kop-address").value = item.form.kopAddress || "";
+    document.getElementById("notif-kop-contact").value = item.form.kopContact || "";
+    document.getElementById("notif-number").value = item.form.number || "";
+    document.getElementById("notif-attachment").value = item.form.attachment || "";
+    document.getElementById("notif-subject").value = item.form.subject || "";
+    document.getElementById("notif-date-input").value = item.form.dateInput || "";
+    document.getElementById("notif-city").value = item.form.city || "";
+    document.getElementById("notif-to").value = item.form.to || "";
+    document.getElementById("notif-to-place").value = item.form.toPlace || "";
+    document.getElementById("notif-opening").value = item.form.opening || "";
+    document.getElementById("notif-closing").value = item.form.closing || "";
+    document.getElementById("notif-cc").value = item.form.cc || "";
+    
+    const contentEditor = document.getElementById("notif-content");
+    if (contentEditor) contentEditor.innerHTML = item.form.content || "";
+
+    // load sigs
+    const mainContainer = document.getElementById("container-notif-main-sig");
+    mainContainer.innerHTML = "";
+    if (item.form.mainSigs) {
+      item.form.mainSigs.forEach(sig => addSignatureField("notif", "main", sig.name, sig.position, sig.imageBase64, sig.align, sig.place, sig.date, sig.nik));
+    } else {
+      addSignatureField("notif", "main");
+    }
+
+    const ackContainer = document.getElementById("container-notif-ack-sig");
+    ackContainer.innerHTML = "";
+    if (item.form.ackSigs) {
+      item.form.ackSigs.forEach(sig => addSignatureField("notif", "ack", sig.name, sig.position, sig.imageBase64, sig.align, sig.place, sig.date, sig.nik));
+    }
+
+    switchView("add-notification");
+    updateNotificationPreview();
   } else {
     resetResignForm();
     document.getElementById("rs-id").value = item.id;
@@ -1507,3 +1654,482 @@ function resetResignForm() {
   if (indicator) indicator.innerText = "";
   updateResignPreview();
 }
+
+function addSignatureField(formPrefix, sigType, nameVal = "", posVal = "", imageBase64 = "", align = "center", place = null, date = null, nikVal = "") {
+  const container = document.getElementById(`container-${formPrefix}-${sigType}-sig`);
+  if (!container) return;
+  const id = generateId();
+  const updater = formPrefix === "inv" ? "updateInvitationPreview()" : "updateNotificationPreview()";
+  
+  if (place === null) {
+    place = document.getElementById(`${formPrefix}-city`) ? document.getElementById(`${formPrefix}-city`).value : "";
+  }
+  if (date === null) {
+    date = document.getElementById(`${formPrefix}-date-input`) ? document.getElementById(`${formPrefix}-date-input`).value : "";
+  }
+
+  const div = document.createElement("div");
+  div.className = "p-4 border rounded relative bg-white shadow-sm";
+  div.id = `sig-${id}`;
+  div.innerHTML = `
+    <button type="button" onclick="removeSignatureField('${id}', '${formPrefix}')" class="absolute top-2 right-2 text-red-500 hover:text-red-700" title="Hapus"><i class="fa-solid fa-times"></i></button>
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-3">
+      <div>
+        <label class="block text-sm font-medium mb-1">Perataan</label>
+        <select class="w-full border rounded p-2 text-sm sig-align" onchange="${updater}">
+          <option value="left" ${align === 'left' ? 'selected' : ''}>Kiri</option>
+          <option value="center" ${align === 'center' ? 'selected' : ''}>Tengah</option>
+          <option value="right" ${align === 'right' ? 'selected' : ''}>Kanan</option>
+        </select>
+      </div>
+      <div>
+        <label class="block text-sm font-medium mb-1">Tempat (Opsional)</label>
+        <input type="text" class="w-full border rounded p-2 text-sm sig-place" value="${place}" oninput="${updater}" placeholder="Jakarta">
+      </div>
+      <div>
+        <label class="block text-sm font-medium mb-1">Tanggal (Opsional)</label>
+        <input type="date" class="w-full border rounded p-2 text-sm sig-date" value="${date}" oninput="${updater}">
+      </div>
+      <div>
+        <label class="block text-sm font-medium mb-1">Posisi/Jabatan *</label>
+        <input type="text" class="w-full border rounded p-2 text-sm sig-pos" value="${posVal}" oninput="${updater}" placeholder="Jabatan">
+      </div>
+      <div>
+        <label class="block text-sm font-medium mb-1">Nama Terang *</label>
+        <input type="text" class="w-full border rounded p-2 text-sm sig-name" value="${nameVal}" oninput="${updater}" placeholder="Nama Lengkap">
+      </div>
+      <div>
+        <label class="block text-sm font-medium mb-1">NIK/NIP/NRP (Opsional)</label>
+        <input type="text" class="w-full border rounded p-2 text-sm sig-nik" value="${nikVal}" oninput="${updater}" placeholder="NIP. 123456789">
+      </div>
+      <div class="col-span-1 md:col-span-2">
+        <label class="block text-sm font-medium mb-1">Gambar Tanda Tangan (Opsional)</label>
+        <input type="file" accept="image/*" class="w-full border rounded p-2 text-sm" onchange="handleImageUploadBase64(event, function(base64) { document.getElementById('sig-img-${id}').value = base64; ${updater}; }, 200)">
+        <input type="hidden" id="sig-img-${id}" class="sig-img" value="${imageBase64}">
+      </div>
+    </div>
+  `;
+  container.appendChild(div);
+  if (formPrefix === "inv") updateInvitationPreview();
+  if (formPrefix === "notif") updateNotificationPreview();
+}
+
+function removeSignatureField(id, formPrefix) {
+  const el = document.getElementById(`sig-${id}`);
+  if (el) el.remove();
+  if (formPrefix === "inv") updateInvitationPreview();
+  if (formPrefix === "notif") updateNotificationPreview();
+}
+
+function getSignatureData(formPrefix, sigType) {
+  const container = document.getElementById(`container-${formPrefix}-${sigType}-sig`);
+  if (!container) return [];
+  const items = [];
+  container.querySelectorAll("div[id^='sig-']").forEach(div => {
+    const name = div.querySelector(".sig-name").value;
+    const position = div.querySelector(".sig-pos").value;
+    const imgBase64 = div.querySelector(".sig-img").value;
+    const alignEl = div.querySelector(".sig-align");
+    const align = alignEl ? alignEl.value : "center";
+    const placeEl = div.querySelector(".sig-place");
+    const place = placeEl ? placeEl.value : "";
+    const dateEl = div.querySelector(".sig-date");
+    const date = dateEl ? dateEl.value : "";
+    const nikEl = div.querySelector(".sig-nik");
+    const nik = nikEl ? nikEl.value : "";
+    items.push({ name, position, imageBase64: imgBase64, align, place, date, nik });
+  });
+  return items;
+}
+
+function resetSickForm() {
+  document.getElementById("sk-id").value = "";
+  document.querySelectorAll("#view-add-sick input").forEach(el => el.value = "");
+  document.querySelectorAll("#view-add-sick .rtf-editor").forEach(el => el.innerHTML = "");
+  const indicator = document.getElementById("sk-autosave-indicator");
+  if (indicator) indicator.innerText = "";
+  updateSickPreview();
+}
+
+function resetInvitationForm() {
+  document.getElementById("inv-id").value = "";
+  document.querySelectorAll("#view-add-invitation input, #view-add-invitation textarea").forEach(el => el.value = "");
+  document.getElementById("container-inv-main-sig").innerHTML = "";
+  document.getElementById("container-inv-ack-sig").innerHTML = "";
+  addSignatureField("inv", "main");
+  const indicator = document.getElementById("inv-autosave-indicator");
+  if (indicator) indicator.innerText = "";
+  updateInvitationPreview();
+}
+
+function resetNotificationForm() {
+  document.getElementById("notif-id").value = "";
+  document.querySelectorAll("#view-add-notification input, #view-add-notification textarea").forEach(el => el.value = "");
+  document.querySelectorAll("#view-add-notification .rtf-editor").forEach(el => el.innerHTML = "");
+  document.getElementById("container-notif-main-sig").innerHTML = "";
+  document.getElementById("container-notif-ack-sig").innerHTML = "";
+  addSignatureField("notif", "main");
+  const indicator = document.getElementById("notif-autosave-indicator");
+  if (indicator) indicator.innerText = "";
+  updateNotificationPreview();
+}
+
+function updateSickPreview() {
+  const dateInput = document.getElementById("sk-date-input").value;
+  const city = document.getElementById("sk-city").value || "Kota";
+  const to = document.getElementById("sk-to").value || "HRD Manager / Atasan / Wali Kelas";
+  const company = document.getElementById("sk-company").value || "Nama Perusahaan / Sekolah";
+  
+  const name = document.getElementById("sk-name").value || "Nama Lengkap";
+  const nik = document.getElementById("sk-nik").value || "123456789";
+  const position = document.getElementById("sk-position").value || "Jabatan / Kelas";
+  
+  const start = document.getElementById("sk-start").value;
+  const end = document.getElementById("sk-end").value;
+  
+  const reasonHtml = document.getElementById("sk-reason").innerHTML || "";
+
+  const formattedDateStr = formatDateObj(dateInput);
+  let dateRange = "";
+  if (start && end) {
+    if (start === end) dateRange = `tanggal ${formatDateObj(start)}`;
+    else dateRange = `mulai tanggal ${formatDateObj(start)} hingga ${formatDateObj(end)}`;
+  } else if (start) {
+    dateRange = `mulai tanggal ${formatDateObj(start)}`;
+  } else {
+    dateRange = "tanggal (Belum diisi)";
+  }
+
+  const container = document.getElementById("preview-sick-a4");
+  container.innerHTML = `
+    <div class="cl-body">
+      <div class="cl-date" style="text-align: right; margin-bottom: 20px;">
+        ${city}, ${formattedDateStr}
+      </div>
+      <div class="cl-to" style="margin-bottom: 30px;">
+        Yth.<br>
+        <b>${to}</b><br>
+        ${company}
+      </div>
+      <div class="cl-content">
+        <p style="margin-bottom: 12px; text-align: justify;">Dengan hormat,</p>
+        <p style="margin-bottom: 12px; text-align: justify;">Yang bertanda tangan di bawah ini:</p>
+        <table style="width: 100%; margin-bottom: 12px; margin-left: 20px;">
+          <tr><td style="width: 150px; padding: 4px 0;">Nama</td><td style="width: 10px;">:</td><td>${name}</td></tr>
+          <tr><td style="padding: 4px 0;">ID / NIK / NIS</td><td>:</td><td>${nik}</td></tr>
+          <tr><td style="padding: 4px 0;">Jabatan / Kelas</td><td>:</td><td>${position}</td></tr>
+        </table>
+        <p style="margin-bottom: 12px; text-align: justify;">
+          Memberitahukan bahwa saya tidak dapat hadir / masuk untuk melaksanakan aktivitas seperti biasa pada ${dateRange}.
+        </p>
+        <p style="margin-bottom: 12px; text-align: justify;">
+          Hal tersebut dikarenakan:
+        </p>
+        <div style="margin-bottom: 12px; margin-left: 20px; text-align: justify;">${reasonHtml}</div>
+        <p style="margin-bottom: 12px; text-align: justify;">
+          Demikian surat pemberitahuan / izin ini saya sampaikan. Atas perhatian dan kebijaksanaannya, saya ucapkan terima kasih.
+        </p>
+      </div>
+      <div class="cl-signature" style="margin-top: 50px;">
+        Hormat saya,<br><br><br><br><b>${name}</b>
+      </div>
+    </div>
+  `;
+  triggerAutoSaveOther("sick");
+}
+
+function renderSignatures(mainSigs, ackSigs) {
+  let html = '<div style="margin-top: 50px; width: 100%; display: flex; flex-direction: column; gap: 40px;">';
+  
+  if (mainSigs && mainSigs.length > 0) {
+    html += '<div style="display: flex; flex-direction: column;">';
+    if (mainSigs.length > 1) {
+      let firstValidDate = "";
+      for (let sig of mainSigs) {
+        let formattedDate = sig.date ? (sig.date.includes('-') ? formatDateWithDay(sig.date) : sig.date) : "";
+        if (sig.place || formattedDate) {
+          firstValidDate = `<p style="margin: 0; margin-bottom: 20px; text-align: center;">${sig.place ? sig.place + ', ' : ''}${formattedDate}</p>`;
+          break;
+        }
+      }
+      html += firstValidDate;
+    }
+
+    html += '<div style="display: flex; justify-content: space-around; flex-wrap: wrap; text-align: center;">';
+    mainSigs.forEach(sig => {
+      let imgHtml = sig.imageBase64 ? `<img src="${sig.imageBase64}" style="max-height: 80px; display: block; margin: 0 auto; object-fit: contain;">` : `<br><br><br>`;
+      let pDateHtml = "";
+      if (mainSigs.length === 1) {
+        let formattedDate = sig.date ? (sig.date.includes('-') ? formatDateWithDay(sig.date) : sig.date) : "";
+        if (sig.place || formattedDate) {
+          pDateHtml = `<p style="margin: 0; margin-bottom: 5px;">${sig.place ? sig.place + ', ' : ''}${formattedDate}</p>`;
+        }
+      }
+      let align = sig.align || "center";
+      html += `
+        <div style="flex: 1; min-width: 200px; text-align: center; display: flex; flex-direction: column; align-items: ${align === 'left' ? 'flex-start' : (align === 'right' ? 'flex-end' : 'center')};">
+          <div style="display: flex; flex-direction: column; align-items: center; text-align: center;">
+            ${pDateHtml}
+            <p style="margin: 0; margin-bottom: 5px;">${sig.position || "Jabatan"}</p>
+            ${imgHtml}
+            <p style="margin: 0; margin-top: 5px;"><b><u>${sig.name || "Nama"}</u></b></p>
+            ${sig.nik ? `<p style="margin: 0; font-size: 14px;">${sig.nik}</p>` : ''}
+          </div>
+        </div>
+      `;
+    });
+    html += '</div>';
+    html += '</div>';
+  }
+
+  if (ackSigs && ackSigs.length > 0) {
+    html += '<div style="display: flex; flex-direction: column;">';
+    html += '<div style="text-align: center; line-height: 1.15;"><p style="margin:0;">Yang mengetahui,</p></div>';
+    
+    if (ackSigs.length > 1) {
+      let firstValidDate = "";
+      for (let sig of ackSigs) {
+        let formattedDate = sig.date ? (sig.date.includes('-') ? formatDateWithDay(sig.date) : sig.date) : "";
+        if (sig.place || formattedDate) {
+          firstValidDate = `<p style="margin: 0; margin-bottom: 20px; line-height: 1.15; text-align: center;">${sig.place ? sig.place + ', ' : ''}${formattedDate}</p>`;
+          break;
+        }
+      }
+      html += firstValidDate;
+    }
+
+    html += '<div style="display: flex; justify-content: space-around; flex-wrap: wrap; text-align: center;">';
+    ackSigs.forEach(sig => {
+      let imgHtml = sig.imageBase64 ? `<img src="${sig.imageBase64}" style="max-height: 80px; display: block; margin: 0 auto; object-fit: contain;">` : `<br><br><br>`;
+      let pDateHtml = "";
+      if (ackSigs.length === 1) {
+        let formattedDate = sig.date ? (sig.date.includes('-') ? formatDateWithDay(sig.date) : sig.date) : "";
+        if (sig.place || formattedDate) {
+          pDateHtml = `<p style="margin: 0; margin-bottom: 5px;">${sig.place ? sig.place + ', ' : ''}${formattedDate}</p>`;
+        }
+      }
+      let align = sig.align || "center";
+      html += `
+        <div style="flex: 1; min-width: 200px; text-align: center; display: flex; flex-direction: column; align-items: ${align === 'left' ? 'flex-start' : (align === 'right' ? 'flex-end' : 'center')};">
+          <div style="display: flex; flex-direction: column; align-items: center; text-align: center;">
+            ${pDateHtml}
+            <p style="margin: 0; margin-bottom: 5px;">${sig.position || "Jabatan"}</p>
+            ${imgHtml}
+            <p style="margin: 0; margin-top: 5px;"><b><u>${sig.name || "Nama"}</u></b></p>
+            ${sig.nik ? `<p style="margin: 0; font-size: 14px;">${sig.nik}</p>` : ''}
+          </div>
+        </div>
+      `;
+    });
+    html += '</div>';
+    html += '</div>';
+  }
+  
+  html += '</div>';
+  return html;
+}
+
+function updateInvitationPreview() {
+  const kopName = document.getElementById("inv-kop-name").value || "Nama Instansi";
+  const kopAddr = document.getElementById("inv-kop-address").value || "Alamat Instansi";
+  const kopContact = document.getElementById("inv-kop-contact").value || "Kontak Instansi";
+  
+  const number = document.getElementById("inv-number").value || "-";
+  const attachment = document.getElementById("inv-attachment").value || "-";
+  const subject = document.getElementById("inv-subject").value || "Perihal Undangan";
+  const dateInput = document.getElementById("inv-date-input").value;
+  const city = document.getElementById("inv-city").value || "Kota";
+  const to = document.getElementById("inv-to").value || "Nama/Instansi Tujuan";
+  const toPlace = document.getElementById("inv-to-place").value || "Tempat";
+  
+  const opening = document.getElementById("inv-opening").value || "Dengan hormat,";
+  const eventDate = document.getElementById("inv-event-date").value || "Senin, 1 Januari 2026";
+  const eventTime = document.getElementById("inv-event-time").value || "09.00 - Selesai";
+  const eventPlace = document.getElementById("inv-event-place").value || "Ruang Rapat";
+  const closing = document.getElementById("inv-closing").value || "Demikian undangan ini kami sampaikan...";
+  const cc = document.getElementById("inv-cc").value;
+  
+  const formattedDateStr = formatDateWithDay(dateInput);
+  
+  const mainSigs = getSignatureData("inv", "main");
+  const ackSigs = getSignatureData("inv", "ack");
+  
+  const logoDataEl = document.getElementById("inv-kop-logo-data");
+  const logoData = logoDataEl ? logoDataEl.value : "";
+  const logoRightDataEl = document.getElementById("inv-kop-logo-right-data");
+  const logoRightData = logoRightDataEl ? logoRightDataEl.value : "";
+  
+  let kopHtml = "";
+  if (logoData || logoRightData) {
+    let leftImg = logoData ? `<img src="${logoData}" style="max-height: 80px; max-width: 80px; margin-right: 20px; object-fit: contain;">` : `<div style="width: 100px;"></div>`;
+    let rightImg = logoRightData ? `<img src="${logoRightData}" style="max-height: 80px; max-width: 80px; margin-left: 20px; object-fit: contain;">` : `<div style="width: 100px;"></div>`;
+    
+    kopHtml = `
+      <div style="display: flex; align-items: center; justify-content: center; border-bottom: 3px solid #000; padding-bottom: 10px; margin-bottom: 20px;">
+        ${leftImg}
+        <div style="text-align: center; flex: 1;">
+          <h2 style="margin: 0; font-size: 20px; text-transform: uppercase;"><b>${kopName}</b></h2>
+          <p style="margin: 5px 0; font-size: 14px;">${kopAddr}</p>
+          <p style="margin: 0; font-size: 12px;">${kopContact}</p>
+        </div>
+        ${rightImg}
+      </div>
+    `;
+  } else {
+    kopHtml = `
+      <div style="border-bottom: 3px solid #000; padding-bottom: 10px; margin-bottom: 20px; text-align: center;">
+        <h2 style="margin: 0; font-size: 20px; text-transform: uppercase;"><b>${kopName}</b></h2>
+        <p style="margin: 5px 0; font-size: 14px;">${kopAddr}</p>
+        <p style="margin: 0; font-size: 12px;">${kopContact}</p>
+      </div>
+    `;
+  }
+
+  const container = document.getElementById("preview-invitation-a4");
+  container.innerHTML = `
+    ${kopHtml}
+    
+    <div style="display: flex; justify-content: space-between; margin-bottom: 20px;">
+      <div>
+        <table style="width: 100%;">
+          <tr><td style="padding: 2px 0; width: 80px;">Nomor</td><td style="width: 10px;">:</td><td>${number}</td></tr>
+          <tr><td style="padding: 2px 0;">Lampiran</td><td>:</td><td>${attachment}</td></tr>
+          <tr><td style="padding: 2px 0;">Perihal</td><td>:</td><td><b>${subject}</b></td></tr>
+        </table>
+      </div>
+      <div style="text-align: right;">
+        ${city}, ${formattedDateStr}
+      </div>
+    </div>
+    
+    <div style="margin-bottom: 20px;">
+      Kepada Yth,<br>
+      <b>${to}</b><br>
+      di ${toPlace}
+    </div>
+    
+    <div style="margin-bottom: 20px; text-align: justify; white-space: pre-line;">
+      ${opening}
+    </div>
+    
+    <div style="margin-bottom: 20px; margin-left: 30px;">
+      <table style="width: 100%;">
+        <tr><td style="padding: 4px 0; width: 120px;">Hari/Tanggal</td><td style="width: 10px;">:</td><td><b>${eventDate}</b></td></tr>
+        <tr><td style="padding: 4px 0;">Waktu</td><td>:</td><td>${eventTime}</td></tr>
+        <tr><td style="padding: 4px 0;">Tempat</td><td>:</td><td>${eventPlace}</td></tr>
+      </table>
+    </div>
+    
+    <div style="margin-bottom: 40px; text-align: justify; white-space: pre-line;">
+      ${closing}
+    </div>
+    
+    ${renderSignatures(mainSigs, ackSigs)}
+    
+    ${cc ? `<div style="margin-top: 30px; text-align: left;">
+      <p style="margin: 0; font-weight: bold;">Tembusan:</p>
+      <div style="white-space: pre-line;">${cc}</div>
+    </div>` : ''}
+  `;
+  triggerAutoSaveOther("invitation");
+}
+
+function updateNotificationPreview() {
+  const kopName = document.getElementById("notif-kop-name").value || "Nama Instansi";
+  const kopAddr = document.getElementById("notif-kop-address").value || "Alamat Instansi";
+  const kopContact = document.getElementById("notif-kop-contact").value || "Kontak Instansi";
+  
+  const number = document.getElementById("notif-number").value || "-";
+  const attachment = document.getElementById("notif-attachment").value || "-";
+  const subject = document.getElementById("notif-subject").value || "Perihal Surat";
+  const dateInput = document.getElementById("notif-date-input").value;
+  const city = document.getElementById("notif-city").value || "Kota";
+  const to = document.getElementById("notif-to").value || "Nama/Instansi Tujuan";
+  const toPlace = document.getElementById("notif-to-place").value || "Tempat";
+  
+  const opening = document.getElementById("notif-opening").value || "Dengan hormat,";
+  const content = document.getElementById("notif-content").innerHTML || "";
+  const closing = document.getElementById("notif-closing").value || "Demikian surat ini...";
+  const cc = document.getElementById("notif-cc").value;
+  
+  const formattedDateStr = formatDateWithDay(dateInput);
+  
+  const mainSigs = getSignatureData("notif", "main");
+  const ackSigs = getSignatureData("notif", "ack");
+  
+  const logoDataEl = document.getElementById("notif-kop-logo-data");
+  const logoData = logoDataEl ? logoDataEl.value : "";
+  const logoRightDataEl = document.getElementById("notif-kop-logo-right-data");
+  const logoRightData = logoRightDataEl ? logoRightDataEl.value : "";
+  
+  let kopHtml = "";
+  if (logoData || logoRightData) {
+    let leftImg = logoData ? `<img src="${logoData}" style="max-height: 80px; max-width: 80px; margin-right: 20px; object-fit: contain;">` : `<div style="width: 100px;"></div>`;
+    let rightImg = logoRightData ? `<img src="${logoRightData}" style="max-height: 80px; max-width: 80px; margin-left: 20px; object-fit: contain;">` : `<div style="width: 100px;"></div>`;
+    
+    kopHtml = `
+      <div style="display: flex; align-items: center; justify-content: center; border-bottom: 3px solid #000; padding-bottom: 10px; margin-bottom: 20px;">
+        ${leftImg}
+        <div style="text-align: center; flex: 1;">
+          <h2 style="margin: 0; font-size: 20px; text-transform: uppercase;"><b>${kopName}</b></h2>
+          <p style="margin: 5px 0; font-size: 14px;">${kopAddr}</p>
+          <p style="margin: 0; font-size: 12px;">${kopContact}</p>
+        </div>
+        ${rightImg}
+      </div>
+    `;
+  } else {
+    kopHtml = `
+      <div style="border-bottom: 3px solid #000; padding-bottom: 10px; margin-bottom: 20px; text-align: center;">
+        <h2 style="margin: 0; font-size: 20px; text-transform: uppercase;"><b>${kopName}</b></h2>
+        <p style="margin: 5px 0; font-size: 14px;">${kopAddr}</p>
+        <p style="margin: 0; font-size: 12px;">${kopContact}</p>
+      </div>
+    `;
+  }
+
+  const container = document.getElementById("preview-notification-a4");
+  container.innerHTML = `
+    ${kopHtml}
+    
+    <div style="display: flex; justify-content: space-between; margin-bottom: 20px;">
+      <div>
+        <table style="width: 100%;">
+          <tr><td style="padding: 2px 0; width: 80px;">Nomor</td><td style="width: 10px;">:</td><td>${number}</td></tr>
+          <tr><td style="padding: 2px 0;">Lampiran</td><td>:</td><td>${attachment}</td></tr>
+          <tr><td style="padding: 2px 0;">Perihal</td><td>:</td><td><b>${subject}</b></td></tr>
+        </table>
+      </div>
+      <div style="text-align: right;">
+        ${city}, ${formattedDateStr}
+      </div>
+    </div>
+    
+    <div style="margin-bottom: 20px;">
+      Kepada Yth,<br>
+      <b>${to}</b><br>
+      di ${toPlace}
+    </div>
+    
+    <div style="margin-bottom: 20px; text-align: justify; white-space: pre-line;">
+      ${opening}
+    </div>
+    
+    <div style="margin-bottom: 20px; margin-left: 20px; text-align: justify;">
+      ${content}
+    </div>
+    
+    <div style="margin-bottom: 40px; text-align: justify; white-space: pre-line;">
+      ${closing}
+    </div>
+    
+    ${renderSignatures(mainSigs, ackSigs)}
+    
+    ${cc ? `<div style="margin-top: 30px; text-align: left;">
+      <p style="margin: 0; font-weight: bold;">Tembusan:</p>
+      <div style="white-space: pre-line;">${cc}</div>
+    </div>` : ''}
+  `;
+  triggerAutoSaveOther("notification");
+}
+
