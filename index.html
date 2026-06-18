@@ -369,7 +369,7 @@
                     <h4
                       class="text-base lg:text-lg font-bold text-secondary border-b border-orange-200 pb-2 mb-4"
                     >
-                      A. Informasi Pribadi
+                      Informasi Pribadi
                     </h4>
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                       <div class="col-span-1 md:col-span-2">
@@ -475,7 +475,7 @@
                     <h4
                       class="text-base lg:text-lg font-bold text-secondary border-b border-orange-200 pb-2 mb-4"
                     >
-                      B. Deskripsi Profil
+                      Deskripsi Profil
                     </h4>
                     <label class="block text-sm font-medium mb-1"
                       >Perkenalan Singkat *</label
@@ -541,121 +541,149 @@
                     </div>
                   </section>
 
-                  <section>
+                  <section class="sortable-section" data-id="education">
                     <div
                       class="flex justify-between items-center border-b border-orange-200 pb-2 mb-4"
                     >
                       <h4 class="text-base lg:text-lg font-bold text-secondary">
-                        C. Riwayat Pendidikan *
+                        Riwayat Pendidikan *
                       </h4>
-                      <button
-                        onclick="addDynamicField('education')"
-                        class="text-primary text-sm hover:underline"
-                      >
-                        <i class="fa-solid fa-plus"></i> Tambah
-                      </button>
+                      <div class="flex gap-2">
+                        <button onclick="moveSectionUp(this)" class="text-gray-500 hover:text-primary" title="Ke Atas"><i class="fa-solid fa-arrow-up"></i></button>
+                        <button onclick="moveSectionDown(this)" class="text-gray-500 hover:text-primary" title="Ke Bawah"><i class="fa-solid fa-arrow-down"></i></button>
+                        <button
+                          onclick="addDynamicField('education')"
+                          class="text-primary text-sm hover:underline ml-2"
+                        >
+                          <i class="fa-solid fa-plus"></i> Tambah
+                        </button>
+                      </div>
                     </div>
                     <div id="container-education" class="space-y-4"></div>
                   </section>
 
-                  <section>
+                  <section class="sortable-section" data-id="experience">
                     <div
                       class="flex justify-between items-center border-b border-orange-200 pb-2 mb-4"
                     >
                       <h4 class="text-base lg:text-lg font-bold text-secondary">
-                        D. Pengalaman Kerja
+                        Pengalaman Kerja
                       </h4>
-                      <button
-                        onclick="addDynamicField('experience')"
-                        class="text-primary text-sm hover:underline"
-                      >
-                        <i class="fa-solid fa-plus"></i> Tambah
-                      </button>
+                      <div class="flex gap-2">
+                        <button onclick="moveSectionUp(this)" class="text-gray-500 hover:text-primary" title="Ke Atas"><i class="fa-solid fa-arrow-up"></i></button>
+                        <button onclick="moveSectionDown(this)" class="text-gray-500 hover:text-primary" title="Ke Bawah"><i class="fa-solid fa-arrow-down"></i></button>
+                        <button
+                          onclick="addDynamicField('experience')"
+                          class="text-primary text-sm hover:underline ml-2"
+                        >
+                          <i class="fa-solid fa-plus"></i> Tambah
+                        </button>
+                      </div>
                     </div>
                     <div id="container-experience" class="space-y-4"></div>
                   </section>
 
-                  <section>
+                  <section class="sortable-section" data-id="project">
                     <div
                       class="flex justify-between items-center border-b border-orange-200 pb-2 mb-4"
                     >
                       <h4 class="text-base lg:text-lg font-bold text-secondary">
-                        E. Pengalaman Proyek
+                        Pengalaman Proyek
                       </h4>
-                      <button
-                        onclick="addDynamicField('project')"
-                        class="text-primary text-sm hover:underline"
-                      >
-                        <i class="fa-solid fa-plus"></i> Tambah
-                      </button>
+                      <div class="flex gap-2">
+                        <button onclick="moveSectionUp(this)" class="text-gray-500 hover:text-primary" title="Ke Atas"><i class="fa-solid fa-arrow-up"></i></button>
+                        <button onclick="moveSectionDown(this)" class="text-gray-500 hover:text-primary" title="Ke Bawah"><i class="fa-solid fa-arrow-down"></i></button>
+                        <button
+                          onclick="addDynamicField('project')"
+                          class="text-primary text-sm hover:underline ml-2"
+                        >
+                          <i class="fa-solid fa-plus"></i> Tambah
+                        </button>
+                      </div>
                     </div>
                     <div id="container-project" class="space-y-4"></div>
                   </section>
 
-                  <section>
+                  <section class="sortable-section" data-id="org">
                     <div
                       class="flex justify-between items-center border-b border-orange-200 pb-2 mb-4"
                     >
                       <h4 class="text-base lg:text-lg font-bold text-secondary">
-                        F. Pengalaman Organisasi
+                        Pengalaman Organisasi
                       </h4>
-                      <button
-                        onclick="addDynamicField('org')"
-                        class="text-primary text-sm hover:underline"
-                      >
-                        <i class="fa-solid fa-plus"></i> Tambah
-                      </button>
+                      <div class="flex gap-2">
+                        <button onclick="moveSectionUp(this)" class="text-gray-500 hover:text-primary" title="Ke Atas"><i class="fa-solid fa-arrow-up"></i></button>
+                        <button onclick="moveSectionDown(this)" class="text-gray-500 hover:text-primary" title="Ke Bawah"><i class="fa-solid fa-arrow-down"></i></button>
+                        <button
+                          onclick="addDynamicField('org')"
+                          class="text-primary text-sm hover:underline ml-2"
+                        >
+                          <i class="fa-solid fa-plus"></i> Tambah
+                        </button>
+                      </div>
                     </div>
                     <div id="container-org" class="space-y-4"></div>
                   </section>
 
-                  <section>
+                  <section class="sortable-section" data-id="cert">
                     <div
                       class="flex justify-between items-center border-b border-orange-200 pb-2 mb-4"
                     >
                       <h4 class="text-base lg:text-lg font-bold text-secondary">
-                        G. Sertifikasi / Penghargaan
+                        Sertifikasi / Penghargaan
                       </h4>
-                      <button
-                        onclick="addDynamicField('cert')"
-                        class="text-primary text-sm hover:underline"
-                      >
-                        <i class="fa-solid fa-plus"></i> Tambah
-                      </button>
+                      <div class="flex gap-2">
+                        <button onclick="moveSectionUp(this)" class="text-gray-500 hover:text-primary" title="Ke Atas"><i class="fa-solid fa-arrow-up"></i></button>
+                        <button onclick="moveSectionDown(this)" class="text-gray-500 hover:text-primary" title="Ke Bawah"><i class="fa-solid fa-arrow-down"></i></button>
+                        <button
+                          onclick="addDynamicField('cert')"
+                          class="text-primary text-sm hover:underline ml-2"
+                        >
+                          <i class="fa-solid fa-plus"></i> Tambah
+                        </button>
+                      </div>
                     </div>
                     <div id="container-cert" class="space-y-4"></div>
                   </section>
 
-                  <section>
+                  <section class="sortable-section" data-id="skill">
                     <div
                       class="flex justify-between items-center border-b border-orange-200 pb-2 mb-4"
                     >
                       <h4 class="text-base lg:text-lg font-bold text-secondary">
-                        H. Skill / Keterampilan
+                        Skill / Keterampilan
                       </h4>
-                      <button
-                        onclick="addSkillField('skill')"
-                        class="text-primary text-sm hover:underline"
-                      >
-                        <i class="fa-solid fa-plus"></i> Tambah
-                      </button>
+                      <div class="flex gap-2">
+                        <button onclick="moveSectionUp(this)" class="text-gray-500 hover:text-primary" title="Ke Atas"><i class="fa-solid fa-arrow-up"></i></button>
+                        <button onclick="moveSectionDown(this)" class="text-gray-500 hover:text-primary" title="Ke Bawah"><i class="fa-solid fa-arrow-down"></i></button>
+                        <button
+                          onclick="addSkillField('skill')"
+                          class="text-primary text-sm hover:underline ml-2"
+                        >
+                          <i class="fa-solid fa-plus"></i> Tambah
+                        </button>
+                      </div>
                     </div>
                     <div id="container-skill" class="flex flex-col gap-3"></div>
                   </section>
 
-                  <section>
+                  <section class="sortable-section" data-id="language">
                     <div
                       class="flex justify-between items-center border-b border-orange-200 pb-2 mb-4"
                     >
                       <h4 class="text-base lg:text-lg font-bold text-secondary">
-                        I. Bahasa
+                        Bahasa
                       </h4>
-                      <button
-                        onclick="addSkillField('language')"
-                        class="text-primary text-sm hover:underline"
-                      >
-                        <i class="fa-solid fa-plus"></i> Tambah
-                      </button>
+                      <div class="flex gap-2">
+                        <button onclick="moveSectionUp(this)" class="text-gray-500 hover:text-primary" title="Ke Atas"><i class="fa-solid fa-arrow-up"></i></button>
+                        <button onclick="moveSectionDown(this)" class="text-gray-500 hover:text-primary" title="Ke Bawah"><i class="fa-solid fa-arrow-down"></i></button>
+                        <button
+                          onclick="addSkillField('language')"
+                          class="text-primary text-sm hover:underline ml-2"
+                        >
+                          <i class="fa-solid fa-plus"></i> Tambah
+                        </button>
+                      </div>
                     </div>
                     <div
                       id="container-language"

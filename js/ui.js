@@ -471,18 +471,17 @@ function updateCVPreview() {
   const linkedin = document.getElementById("cv-linkedin").value;
   const portfolio = document.getElementById("cv-portfolio").value;
 
-  let contactLine1 = [];
-  if (address) contactLine1.push(address);
-  if (phone) contactLine1.push(phone);
-  if (email) contactLine1.push(email);
+  let topContactLine = [];
+  if (phone) topContactLine.push(phone);
+  if (email) topContactLine.push(email);
+  if (linkedin) topContactLine.push(linkedin);
+  if (portfolio) topContactLine.push(portfolio);
 
-  let contactLine2 = [];
-  if (linkedin) contactLine2.push(linkedin);
-  if (portfolio) contactLine2.push(portfolio);
-
-  let contactString = contactLine1.join(" | ");
-  if (contactLine2.length > 0)
-    contactString += "<br>" + contactLine2.join(" | ");
+  let contactString = topContactLine.join(" | ");
+  if (address) {
+    if (contactString) contactString += "<br>";
+    contactString += address;
+  }
 
   let summaryHtml = document.getElementById("cv-summary").innerHTML.trim();
   if (summaryHtml === "<br>") summaryHtml = "";
@@ -490,16 +489,16 @@ function updateCVPreview() {
   let html = `<div style="display: flex; align-items: center; margin-bottom: 15px; gap: 20px;">`;
 
   if (currentProfilePic) {
-    html += `<img src="${currentProfilePic}" style="width: 90px; height: 120px; object-fit: cover;">`;
+    html += `<img src="${currentProfilePic}" style="width: 2.86cm; height: 3.81cm; object-fit: cover;">`;
   }
 
   let contactAlign = currentProfilePic || currentQrCode ? "left" : "center";
   let nameAlign = currentProfilePic || currentQrCode ? "left" : "center";
-  let nameFontSize = currentProfilePic && currentQrCode ? "13pt" : "16pt";
-  let contactFontSize = currentProfilePic && currentQrCode ? "8.5pt" : "10pt";
+  let nameFontSize = "18pt";
+  let contactFontSize = "9pt";
 
   html += `<div style="flex: 1; text-align: left;">
-        <div class="ats-name" style="text-align: ${nameAlign}; margin-bottom: 8px; font-size: ${nameFontSize};">${name}</div>
+        <div class="ats-name" style="text-align: ${nameAlign}; margin-bottom: 0; font-size: ${nameFontSize};">${name}</div>
         <div class="ats-contact" style="text-align: ${contactAlign}; padding-bottom: 0; border: none; font-size: ${contactFontSize};">${contactString}</div>
      </div>`;
 
@@ -511,36 +510,6 @@ function updateCVPreview() {
   if (summaryHtml) {
     let finalSummary = formatDescription(summaryHtml);
     html += `<div class="ats-section-title">Ringkasan Profil</div><div class="ats-desc">${finalSummary}</div>`;
-  }
-
-  let eduData = sortDataByDateDesc(getDynamicData("education"));
-  if (eduData.length > 0) {
-    html += `<div class="ats-section-title">Pendidikan</div>`;
-    eduData.forEach((edu) => {
-      let subInfo = [];
-      if (edu.major) subInfo.push(edu.major);
-      if (edu.score || edu.gpa) {
-        let scoreVal = edu.score || edu.gpa;
-        if (edu.scale === "ipk4") subInfo.push(`IPK: ${scoreVal} / 4.00`);
-        else if (edu.scale === "ipk5") subInfo.push(`IPK: ${scoreVal} / 5.00`);
-        else if (edu.scale === "nilai100")
-          subInfo.push(`Nilai: ${scoreVal} / 100`);
-        else subInfo.push(`Nilai/IPK: ${scoreVal}`);
-      }
-
-      let loc = [edu.city, edu.country].filter(Boolean).join(", ");
-      let subStr = subInfo.join(" | ");
-      let period = formatPeriod(edu.start, edu.end);
-      if (edu.ongoing || !edu.end) {
-        const s = formatMonthYear(edu.start);
-        period = s ? `${s} - Sekarang` : "Sekarang";
-      }
-      html += `
-                <div class="ats-item-header"><span>${edu.name}</span><span style="font-weight: bold;">${loc}</span></div>
-                <div class="ats-item-sub"><span>${subStr}</span><span style="font-weight: bold;">${period}</span></div>
-                <div class="ats-desc">${formatDescription(edu.desc)}</div>
-            `;
-    });
   }
 
   const renderSection = (title, data) => {
@@ -562,47 +531,89 @@ function updateCVPreview() {
     return secHtml;
   };
 
-  html += renderSection(
-    "Pengalaman Kerja",
-    sortDataByDateDesc(getDynamicData("experience")),
-  );
-  html += renderSection(
-    "Pengalaman Proyek",
-    sortDataByDateDesc(getDynamicData("project")),
-  );
-  html += renderSection(
-    "Pengalaman Organisasi",
-    sortDataByDateDesc(getDynamicData("org")),
-  );
+  const sortableSections = document.querySelectorAll('.sortable-section');
+  sortableSections.forEach(section => {
+    const id = section.getAttribute('data-id');
+    if (id === 'education') {
+      let eduData = sortDataByDateDesc(getDynamicData("education"));
+      if (eduData.length > 0) {
+        html += `<div class="ats-section-title">Riwayat Pendidikan</div>`;
+        eduData.forEach((edu) => {
+          let subInfo = [];
+          if (edu.major) subInfo.push(edu.major);
+          if (edu.score || edu.gpa) {
+            let scoreVal = edu.score || edu.gpa;
+            if (edu.scale === "ipk4") subInfo.push(`IPK: ${scoreVal} / 4.00`);
+            else if (edu.scale === "ipk5") subInfo.push(`IPK: ${scoreVal} / 5.00`);
+            else if (edu.scale === "nilai100")
+              subInfo.push(`Nilai: ${scoreVal} / 100`);
+            else subInfo.push(`Nilai/IPK: ${scoreVal}`);
+          }
 
-  let certData = sortDataByDateDesc(getDynamicData("cert"));
-  if (certData.length > 0) {
-    html += `<div class="ats-section-title">Sertifikasi & Penghargaan</div>`;
-    certData.forEach((cert) => {
-      let loc = [cert.city, cert.country].filter(Boolean).join(", ");
-      let period = formatPeriod(cert.start, cert.end);
-      if (cert.ongoing || !cert.end) {
-        const s = formatMonthYear(cert.start);
-        period = s ? `${s} - Sekarang` : "Sekarang";
+          let loc = [edu.city, edu.country].filter(Boolean).join(", ");
+          let subStr = subInfo.join(" | ");
+          let period = formatPeriod(edu.start, edu.end);
+          if (edu.ongoing || !edu.end) {
+            const s = formatMonthYear(edu.start);
+            period = s ? `${s} - Sekarang` : "Sekarang";
+          }
+          html += `
+                <div class="ats-item-header"><span>${edu.name}</span><span style="font-weight: bold;">${loc}</span></div>
+                <div class="ats-item-sub"><span>${subStr}</span><span style="font-weight: bold;">${period}</span></div>
+                <div class="ats-desc">${formatDescription(edu.desc)}</div>
+            `;
+        });
       }
-      html += `
+    } else if (id === 'experience') {
+      html += renderSection("Pengalaman Kerja", sortDataByDateDesc(getDynamicData("experience")));
+    } else if (id === 'project') {
+      html += renderSection("Pengalaman Proyek", sortDataByDateDesc(getDynamicData("project")));
+    } else if (id === 'org') {
+      html += renderSection("Pengalaman Organisasi", sortDataByDateDesc(getDynamicData("org")));
+    } else if (id === 'cert') {
+      let certData = sortDataByDateDesc(getDynamicData("cert"));
+      if (certData.length > 0) {
+        html += `<div class="ats-section-title">Sertifikasi & Penghargaan</div>`;
+        certData.forEach((cert) => {
+          let loc = [cert.city, cert.country].filter(Boolean).join(", ");
+          let period = formatPeriod(cert.start, cert.end);
+          if (cert.ongoing || !cert.end) {
+            const s = formatMonthYear(cert.start);
+            period = s ? `${s} - Sekarang` : "Sekarang";
+          }
+          html += `
                 <div class="ats-item-header"><span>${cert.name}</span><span style="font-weight: bold;">${loc}</span></div>
                 <div class="ats-item-sub"><span>${cert.issuer || ""}</span><span style="font-weight: bold;">${period}</span></div>
                 <div class="ats-desc">${formatDescription(cert.desc)}</div>
             `;
-    });
-  }
-
-  html += renderCategorizedList(
-    "Skill / Keterampilan",
-    getSkillData("skill"),
-    "skill",
-  );
-  html += renderCategorizedList("Bahasa", getSkillData("language"), "language");
+        });
+      }
+    } else if (id === 'skill') {
+      html += renderCategorizedList("Skill / Keterampilan", getSkillData("skill"), "skill");
+    } else if (id === 'language') {
+      html += renderCategorizedList("Bahasa", getSkillData("language"), "language");
+    }
+  });
 
   preview.innerHTML = html;
   triggerAutoSaveCV();
 }
+
+window.moveSectionUp = function(btn) {
+  const section = btn.closest('.sortable-section');
+  if (section && section.previousElementSibling && section.previousElementSibling.classList.contains('sortable-section')) {
+    section.parentNode.insertBefore(section, section.previousElementSibling);
+    updateCVPreview();
+  }
+};
+
+window.moveSectionDown = function(btn) {
+  const section = btn.closest('.sortable-section');
+  if (section && section.nextElementSibling && section.nextElementSibling.classList.contains('sortable-section')) {
+    section.parentNode.insertBefore(section.nextElementSibling, section);
+    updateCVPreview();
+  }
+};
 
 function buildSavedCVHTML(form) {
   const name = form.header.name || "NAMA LENGKAP";
@@ -612,33 +623,31 @@ function buildSavedCVHTML(form) {
   const linkedin = form.header.linkedin;
   const portfolio = form.header.portfolio;
 
-  let contactLine1 = [];
-  if (address) contactLine1.push(address);
-  if (phone) contactLine1.push(phone);
-  if (email) contactLine1.push(email);
+  let topContactLine = [];
+  if (phone) topContactLine.push(phone);
+  if (email) topContactLine.push(email);
+  if (linkedin) topContactLine.push(linkedin);
+  if (portfolio) topContactLine.push(portfolio);
 
-  let contactLine2 = [];
-  if (linkedin) contactLine2.push(linkedin);
-  if (portfolio) contactLine2.push(portfolio);
-
-  let contactString = contactLine1.join(" | ");
-  if (contactLine2.length > 0)
-    contactString += "<br>" + contactLine2.join(" | ");
+  let contactString = topContactLine.join(" | ");
+  if (address) {
+    if (contactString) contactString += "<br>";
+    contactString += address;
+  }
 
   let html = `<div style="display: flex; align-items: center; margin-bottom: 15px; gap: 20px;">`;
 
   if (form.header.photo)
-    html += `<img src="${form.header.photo}" style="width: 90px; height: 120px; object-fit: cover;">`;
+    html += `<img src="${form.header.photo}" style="width: 2.86cm; height: 3.81cm; object-fit: cover;">`;
 
   let contactAlign =
     form.header.photo || form.header.qrcode ? "left" : "center";
   let nameAlign = form.header.photo || form.header.qrcode ? "left" : "center";
-  let nameFontSize = form.header.photo && form.header.qrcode ? "13pt" : "16pt";
-  let contactFontSize =
-    form.header.photo && form.header.qrcode ? "8.5pt" : "10pt";
+  let nameFontSize = "18pt";
+  let contactFontSize = "9pt";
 
   html += `<div style="flex: 1; text-align: left;">
-        <div class="ats-name" style="text-align: ${nameAlign}; margin-bottom: 8px; font-size: ${nameFontSize};">${name}</div>
+        <div class="ats-name" style="text-align: ${nameAlign}; margin-bottom: 0; font-size: ${nameFontSize};">${name}</div>
         <div class="ats-contact" style="text-align: ${contactAlign}; padding-bottom: 0; border: none; font-size: ${contactFontSize};">${contactString}</div>
      </div>`;
 

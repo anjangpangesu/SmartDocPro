@@ -1,5 +1,5 @@
 body {
-  font-family: "Inter", sans-serif;
+  font-family: Arial, Helvetica, sans-serif;
   background-color: #f3f4f6;
 }
 
@@ -9,7 +9,7 @@ body {
   height: auto;
   background: white;
   color: black;
-  padding: 20mm;
+  padding: 0.95cm 0.53cm 0.49cm 0.53cm;
   box-shadow:
     0 4px 6px -1px rgba(0, 0, 0, 0.1),
     0 2px 4px -1px rgba(0, 0, 0, 0.06);
@@ -19,29 +19,36 @@ body {
   position: relative;
   word-wrap: break-word;
   overflow-wrap: break-word;
+  font-family: Arial, Helvetica, sans-serif;
+  line-height: 1.15;
 }
 
 .ats-name {
-  font-size: 16pt;
+  font-size: 18pt;
   font-weight: bold;
   text-align: center;
-  margin-bottom: 5px;
+  margin-top: 0;
+  margin-bottom: 0;
+  line-height: 1.15;
   text-transform: uppercase;
   color: #000000;
 }
 .ats-contact {
-  font-size: 10pt;
+  font-size: 9pt;
   text-align: center;
-  margin-bottom: 15px;
-  padding-bottom: 10px;
+  margin-top: 0;
+  margin-bottom: 0;
+  padding-bottom: 0;
+  line-height: 1.15;
   color: #000000;
 }
 .ats-section-title {
-  font-size: 11pt;
+  font-size: 9pt;
   font-weight: bold;
   border-bottom: 2px solid #000000;
   margin-top: 15px;
-  margin-bottom: 10px;
+  margin-bottom: 5px;
+  line-height: 1.15;
   text-transform: uppercase;
   color: #000000;
 }
@@ -49,54 +56,70 @@ body {
   display: flex;
   justify-content: space-between;
   font-weight: bold;
-  font-size: 10pt;
-  margin-bottom: 2px;
+  font-size: 9pt;
+  margin-top: 5px;
+  margin-bottom: 0;
+  line-height: 1.15;
   color: #000000;
 }
 .ats-item-sub {
   display: flex;
   justify-content: space-between;
   font-style: normal;
-  font-size: 10pt;
-  margin-bottom: 5px;
+  font-size: 9pt;
+  margin-top: 0;
+  margin-bottom: 0;
+  line-height: 1.15;
   color: #000000;
 }
 .ats-desc {
-  font-size: 10pt;
+  font-size: 9pt;
   text-align: justify;
-  margin-bottom: 10px;
+  margin-top: 0;
+  margin-bottom: 0;
+  line-height: 1.15;
   color: #000000;
 }
 .ats-desc ul {
   list-style-type: disc;
   padding-left: 20px;
-  margin-top: 2px;
+  margin-top: 0;
+  margin-bottom: 0;
 }
 .ats-desc li {
-  margin-bottom: 2px;
+  margin-top: 0;
+  margin-bottom: 0;
+  line-height: 1.15;
 }
 
 .cl-header {
   text-align: right;
-  font-size: 10pt;
-  margin-bottom: 20px;
+  font-size: 9pt;
+  margin-top: 0;
+  margin-bottom: 0;
+  line-height: 1.15;
   color: #000000;
 }
 .cl-recipient {
-  font-size: 10pt;
-  margin-bottom: 20px;
+  font-size: 9pt;
+  margin-top: 0;
+  margin-bottom: 0;
+  line-height: 1.15;
   color: #000000;
 }
 .cl-body {
-  font-size: 10pt;
+  font-size: 9pt;
   text-align: justify;
-  line-height: 1.5;
-  margin-bottom: 15px;
+  line-height: 1.15;
+  margin-top: 0;
+  margin-bottom: 0;
   color: #000000;
 }
 .cl-signature {
-  margin-top: 15px;
-  font-size: 10pt;
+  margin-top: 0;
+  margin-bottom: 0;
+  line-height: 1.15;
+  font-size: 9pt;
   color: #000000;
 }
 
@@ -242,7 +265,7 @@ td,
 
   @page {
     size: A4 portrait;
-    margin: 20mm;
+    margin: 0.95cm 0.53cm 0.49cm 0.53cm;
   }
 
   * {
