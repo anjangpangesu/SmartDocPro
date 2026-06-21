@@ -47,7 +47,19 @@ function initApp() {
   resetInvitationForm();
   resetNotificationForm();
 
-  switchView("dashboard");
+  const hash = window.location.hash.substring(1);
+  if (hash && views && views.includes(hash)) {
+    switchView(hash, false);
+  } else {
+    switchView("dashboard", false);
+  }
+
+  window.addEventListener("hashchange", () => {
+    const newHash = window.location.hash.substring(1);
+    if (newHash && views && views.includes(newHash)) {
+      switchView(newHash, false);
+    }
+  });
 }
 
 window.onload = initApp;

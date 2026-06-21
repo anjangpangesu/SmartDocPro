@@ -294,7 +294,10 @@ function toggleSidebar() {
   }
 }
 
-function switchView(viewId) {
+function switchView(viewId, updateHash = true) {
+  if (updateHash) {
+    history.pushState(null, null, `#${viewId}`);
+  }
   views.forEach((v) => {
     document.getElementById(`view-${v}`).classList.add("hidden-view");
     document.getElementById(`menu-${v}`)?.classList.remove("bg-secondary");
