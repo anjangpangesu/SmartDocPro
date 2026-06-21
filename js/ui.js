@@ -1276,6 +1276,7 @@ function renderCVHistory() {
             <td class="p-3 lg:p-4 flex justify-center gap-2">
                 <button onclick="downloadDocxCVFromHistory('${cv.id}', this)" class="bg-blue-100 text-blue-600 px-3 py-1 rounded hover:bg-blue-200 transition" title="Download Word"><i class="fa-solid fa-file-word"></i></button>
                 <button onclick="downloadCVFromHistory('${cv.id}', this)" class="bg-green-100 text-green-600 px-3 py-1 rounded hover:bg-green-200 transition" title="Download PDF"><i class="fa-solid fa-download"></i></button>
+                <button onclick="duplicateCV('${cv.id}')" class="bg-yellow-100 text-yellow-600 px-3 py-1 rounded hover:bg-yellow-200 transition" title="Duplikat"><i class="fa-solid fa-copy"></i></button>
                 <button onclick="editCV('${cv.id}')" class="bg-blue-100 text-primary px-3 py-1 rounded hover:bg-blue-200 transition" title="Edit"><i class="fa-solid fa-pen"></i></button>
                 <button onclick="deleteCV('${cv.id}')" class="bg-red-100 text-red-600 px-3 py-1 rounded hover:bg-red-200 transition" title="Hapus"><i class="fa-solid fa-trash"></i></button>
             </td>
@@ -1403,6 +1404,7 @@ function renderLetterHistory() {
             <td class="p-3 lg:p-4 flex justify-center gap-2">
                 <button onclick="downloadDocxLetterFromHistory('${cl.id}', this)" class="bg-blue-100 text-blue-600 px-3 py-1 rounded hover:bg-blue-200 transition" title="Download Word"><i class="fa-solid fa-file-word"></i></button>
                 <button onclick="downloadLetterFromHistory('${cl.id}', this)" class="bg-green-100 text-green-600 px-3 py-1 rounded hover:bg-green-200 transition" title="Download PDF"><i class="fa-solid fa-download"></i></button>
+                <button onclick="duplicateLetter('${cl.id}')" class="bg-yellow-100 text-yellow-600 px-3 py-1 rounded hover:bg-yellow-200 transition" title="Duplikat"><i class="fa-solid fa-copy"></i></button>
                 <button onclick="editLetter('${cl.id}')" class="bg-blue-100 text-primary px-3 py-1 rounded hover:bg-blue-200 transition" title="Edit"><i class="fa-solid fa-pen"></i></button>
                 <button onclick="deleteLetter('${cl.id}')" class="bg-red-100 text-red-600 px-3 py-1 rounded hover:bg-red-200 transition" title="Hapus"><i class="fa-solid fa-trash"></i></button>
             </td>
@@ -1481,6 +1483,7 @@ function renderOtherHistory() {
             <td class="p-3 lg:p-4 flex justify-center gap-2">
                 <button onclick="downloadDocxOtherFromHistory('${item.id}', this)" class="bg-blue-100 text-blue-600 px-3 py-1 rounded hover:bg-blue-200 transition" title="Download Word"><i class="fa-solid fa-file-word"></i></button>
                 <button onclick="downloadOtherFromHistory('${item.id}', this)" class="bg-green-100 text-green-600 px-3 py-1 rounded hover:bg-green-200 transition" title="Download PDF"><i class="fa-solid fa-download"></i></button>
+                <button onclick="duplicateOtherLetter('${item.id}')" class="bg-yellow-100 text-yellow-600 px-3 py-1 rounded hover:bg-yellow-200 transition" title="Duplikat"><i class="fa-solid fa-copy"></i></button>
                 <button onclick="editOtherLetter('${item.id}')" class="bg-blue-100 text-primary px-3 py-1 rounded hover:bg-blue-200 transition" title="Edit"><i class="fa-solid fa-pen"></i></button>
                 <button onclick="deleteOtherLetter('${item.id}')" class="bg-red-100 text-red-600 px-3 py-1 rounded hover:bg-red-200 transition" title="Hapus"><i class="fa-solid fa-trash"></i></button>
             </td>

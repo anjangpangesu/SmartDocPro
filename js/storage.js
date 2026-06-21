@@ -561,3 +561,54 @@ function deleteOtherLetter(id) {
     showToast("Arsip surat berhasil dihapus.", "success");
   }
 }
+
+function duplicateCV(id) {
+  const cv = cvData.find((c) => c.id === id);
+  if (!cv) return;
+  const newId = generateId();
+  const newName = getUniqueName(cv.name, cvData, newId);
+  const duplicated = JSON.parse(JSON.stringify(cv));
+  duplicated.id = newId;
+  duplicated.name = newName;
+  duplicated.date = new Date().toISOString();
+  
+  cvData.push(duplicated);
+  localStorage.setItem("progen_cvs", JSON.stringify(cvData));
+  updateDashboardStats();
+  renderCVHistory();
+  showToast("CV berhasil disalin.", "success");
+}
+
+function duplicateLetter(id) {
+  const cl = letterData.find((l) => l.id === id);
+  if (!cl) return;
+  const newId = generateId();
+  const newName = getUniqueName(cl.name, letterData, newId);
+  const duplicated = JSON.parse(JSON.stringify(cl));
+  duplicated.id = newId;
+  duplicated.name = newName;
+  duplicated.date = new Date().toISOString();
+  
+  letterData.push(duplicated);
+  localStorage.setItem("progen_letters", JSON.stringify(letterData));
+  updateDashboardStats();
+  renderLetterHistory();
+  showToast("Surat Lamaran berhasil disalin.", "success");
+}
+
+function duplicateOtherLetter(id) {
+  const item = otherLetterData.find((l) => l.id === id);
+  if (!item) return;
+  const newId = generateId();
+  const newName = getUniqueName(item.name, otherLetterData, newId);
+  const duplicated = JSON.parse(JSON.stringify(item));
+  duplicated.id = newId;
+  duplicated.name = newName;
+  duplicated.date = new Date().toISOString();
+  
+  otherLetterData.push(duplicated);
+  localStorage.setItem("progen_other_letters", JSON.stringify(otherLetterData));
+  updateDashboardStats();
+  renderOtherHistory();
+  showToast("Surat Administrasi berhasil disalin.", "success");
+}
