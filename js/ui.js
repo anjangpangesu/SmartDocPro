@@ -112,6 +112,70 @@ function triggerAutoSaveOther(type) {
   }, 1500);
 }
 
+function showConfirmModal(message, onConfirm) {
+  const overlay = document.createElement("div");
+  overlay.className = "fixed inset-0 bg-gray-900 bg-opacity-50 z-50 flex items-center justify-center transition-opacity";
+  overlay.id = "custom-confirm-modal";
+
+  const modal = document.createElement("div");
+  modal.className = "bg-white rounded-xl shadow-xl p-6 max-w-sm w-full mx-4 transform transition-all scale-95 opacity-0";
+  
+  const iconContainer = document.createElement("div");
+  iconContainer.className = "flex justify-center mb-4";
+  iconContainer.innerHTML = `<div class="w-12 h-12 rounded-full bg-red-100 text-red-600 flex items-center justify-center text-xl"><i class="fa-solid fa-triangle-exclamation"></i></div>`;
+  
+  const title = document.createElement("h3");
+  title.className = "text-lg font-bold text-gray-900 text-center mb-2";
+  title.innerText = "Konfirmasi";
+
+  const messageP = document.createElement("p");
+  messageP.className = "text-gray-600 text-center text-sm mb-6";
+  messageP.innerText = message;
+
+  const btnContainer = document.createElement("div");
+  btnContainer.className = "flex justify-center gap-3";
+
+  const btnCancel = document.createElement("button");
+  btnCancel.className = "px-4 py-2 bg-gray-200 text-gray-800 rounded-lg text-sm font-medium hover:bg-gray-300 transition-colors";
+  btnCancel.innerText = "Batal";
+  
+  const btnConfirm = document.createElement("button");
+  btnConfirm.className = "px-4 py-2 bg-red-600 text-white rounded-lg text-sm font-medium hover:bg-red-700 transition-colors";
+  btnConfirm.innerText = "Hapus";
+
+  btnContainer.appendChild(btnCancel);
+  btnContainer.appendChild(btnConfirm);
+
+  modal.appendChild(iconContainer);
+  modal.appendChild(title);
+  modal.appendChild(messageP);
+  modal.appendChild(btnContainer);
+  overlay.appendChild(modal);
+
+  document.body.appendChild(overlay);
+
+  setTimeout(() => {
+    modal.classList.remove("scale-95", "opacity-0");
+    modal.classList.add("scale-100", "opacity-100");
+  }, 10);
+
+  const closeModal = () => {
+    modal.classList.remove("scale-100", "opacity-100");
+    modal.classList.add("scale-95", "opacity-0");
+    setTimeout(() => {
+      if (document.body.contains(overlay)) {
+        document.body.removeChild(overlay);
+      }
+    }, 200);
+  };
+
+  btnCancel.onclick = closeModal;
+  btnConfirm.onclick = () => {
+    closeModal();
+    if (onConfirm) onConfirm();
+  };
+}
+
 function showToast(message, type = "success") {
   const container = document.getElementById("toast-container");
   if (!container) return;

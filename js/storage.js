@@ -225,13 +225,13 @@ function saveCV(isAutoSave = false) {
 }
 
 function deleteCV(id) {
-  if (confirm("Anda yakin ingin menghapus CV ini secara permanen?")) {
+  showConfirmModal("Anda yakin ingin menghapus CV ini secara permanen?", () => {
     cvData = cvData.filter((c) => c.id !== id);
     localStorage.setItem("progen_cvs", JSON.stringify(cvData));
     updateDashboardStats();
     renderCVHistory();
     showToast("Dokumen CV telah dihapus.", "success");
-  }
+  });
 }
 
 function saveLetter(isAutoSave = false) {
@@ -329,15 +329,13 @@ function saveLetter(isAutoSave = false) {
 }
 
 function deleteLetter(id) {
-  if (
-    confirm("Anda yakin ingin menghapus Surat Lamaran ini secara permanen?")
-  ) {
+  showConfirmModal("Anda yakin ingin menghapus Surat Lamaran ini secara permanen?", () => {
     letterData = letterData.filter((l) => l.id !== id);
     localStorage.setItem("progen_letters", JSON.stringify(letterData));
     updateDashboardStats();
     renderLetterHistory();
     showToast("Surat Lamaran telah dihapus.", "success");
-  }
+  });
 }
 
 function saveOtherLetter(type, isAutoSave = false) {
@@ -546,11 +544,7 @@ function saveOtherLetter(type, isAutoSave = false) {
 }
 
 function deleteOtherLetter(id) {
-  if (
-    confirm(
-      "Anda yakin ingin menghapus surat administrasi ini secara permanen?",
-    )
-  ) {
+  showConfirmModal("Anda yakin ingin menghapus surat administrasi ini secara permanen?", () => {
     otherLetterData = otherLetterData.filter((l) => l.id !== id);
     localStorage.setItem(
       "progen_other_letters",
@@ -559,7 +553,7 @@ function deleteOtherLetter(id) {
     updateDashboardStats();
     renderOtherHistory();
     showToast("Arsip surat berhasil dihapus.", "success");
-  }
+  });
 }
 
 function duplicateCV(id) {
