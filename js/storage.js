@@ -27,7 +27,7 @@ function exportData() {
   const url = URL.createObjectURL(blob);
   const a = document.createElement("a");
   a.href = url;
-  a.download = `ProGen_Backup_${new Date().getTime()}.json`;
+  a.download = `SmartDocPro_Backup_${new Date().getTime()}.json`;
   document.body.appendChild(a);
   a.click();
   document.body.removeChild(a);
@@ -90,6 +90,26 @@ function importData(event) {
   reader.readAsText(file);
 }
 
+function getUniqueName(originalName, dataArray, currentId) {
+  let maxCount = 0;
+  let hasExactMatch = false;
+  const escapedName = originalName.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  const nameRegex = new RegExp(`^${escapedName}(?: \\((\\d+)\\))?$`);
+  dataArray.forEach((item) => {
+    if (item.id === currentId) return;
+    if (item.name === originalName) hasExactMatch = true;
+    let match = item.name.match(nameRegex);
+    if (match && match[1]) {
+      let num = parseInt(match[1], 10);
+      if (num > maxCount) maxCount = num;
+    }
+  });
+  if (hasExactMatch || maxCount > 0) {
+    return `${originalName} (${Math.max(2, maxCount + 1)})`;
+  }
+  return originalName;
+}
+
 function saveCV(isAutoSave = false) {
   const idInput = document.getElementById("cv-id").value;
   const generatedId = idInput || generateId();
@@ -141,9 +161,11 @@ function saveCV(isAutoSave = false) {
   let summaryHtml = document.getElementById("cv-summary").innerHTML.trim();
   if (summaryHtml === "<br>") summaryHtml = "";
 
+  const uniqueName = getUniqueName(nameVal, cvData, generatedId);
+
   const cvObj = {
     id: generatedId,
-    name: nameVal,
+    name: uniqueName,
     date: new Date().toISOString(),
     form: {
       header: {
@@ -255,6 +277,7 @@ function saveLetter(isAutoSave = false) {
       city: document.getElementById("cl-city").value,
       dateInput: document.getElementById("cl-date-input").value,
       subject: document.getElementById("cl-subject").value,
+      position: document.getElementById("cl-position").value,
       attachment: document.getElementById("cl-attachment").value,
       to: document.getElementById("cl-to").value,
       companyStreet: document.getElementById("cl-company-street").value,

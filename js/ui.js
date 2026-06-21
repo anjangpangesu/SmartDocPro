@@ -1420,6 +1420,9 @@ function editLetter(id) {
   document.getElementById("cl-city").value = cl.form.city || "";
   document.getElementById("cl-date-input").value = cl.form.dateInput || "";
   document.getElementById("cl-subject").value = cl.form.subject;
+  if (document.getElementById("cl-position")) {
+    document.getElementById("cl-position").value = cl.form.position || "";
+  }
   document.getElementById("cl-attachment").value = cl.form.attachment;
   document.getElementById("cl-to").value = cl.form.to;
   document.getElementById("cl-company-street").value =

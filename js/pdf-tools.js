@@ -200,7 +200,7 @@ async function mergePDFs() {
 
     const a = document.createElement("a");
     a.href = url;
-    a.download = "Berkas_Gabungan_ProGenATS.pdf";
+    a.download = "Berkas_Gabungan_SmartDocPro.pdf";
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);

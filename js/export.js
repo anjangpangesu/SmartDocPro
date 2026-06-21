@@ -4,9 +4,12 @@ function downloadPDF(elementId, filenamePrefix) {
 
   if (elementId === "preview-cv-a4")
     nameField = document.getElementById("cv-name").value;
-  else if (elementId === "preview-letter-a4")
-    nameField = document.getElementById("cl-name").value;
-  else if (elementId === "preview-leave-a4")
+  else if (elementId === "preview-letter-a4") {
+    let name = document.getElementById("cl-name").value;
+    let posEl = document.getElementById("cl-position");
+    let pos = posEl ? posEl.value : "";
+    nameField = pos ? `${name}_${pos}` : name;
+  } else if (elementId === "preview-leave-a4")
     nameField = document.getElementById("lv-name").value;
   else if (elementId === "preview-resign-a4")
     nameField = document.getElementById("rs-name").value;
@@ -29,10 +32,14 @@ function downloadCVFromHistory(id, btnElement) {
 function downloadLetterFromHistory(id, btnElement) {
   const cl = letterData.find((l) => l.id === id);
   if (!cl) return;
+  let finalName = cl.name;
+  if (cl.form && cl.form.position) {
+    finalName = `${cl.name}_${cl.form.position}`;
+  }
   executeExport(
     buildSavedLetterHTML(cl.form),
     "Surat_Lamaran",
-    cl.name,
+    finalName,
     btnElement,
   );
 }
@@ -92,9 +99,12 @@ function downloadDOCX(elementId, filenamePrefix) {
 
   if (elementId === "preview-cv-a4")
     nameField = document.getElementById("cv-name").value;
-  else if (elementId === "preview-letter-a4")
-    nameField = document.getElementById("cl-name").value;
-  else if (elementId === "preview-leave-a4")
+  else if (elementId === "preview-letter-a4") {
+    let name = document.getElementById("cl-name").value;
+    let posEl = document.getElementById("cl-position");
+    let pos = posEl ? posEl.value : "";
+    nameField = pos ? `${name}_${pos}` : name;
+  } else if (elementId === "preview-leave-a4")
     nameField = document.getElementById("lv-name").value;
   else if (elementId === "preview-resign-a4")
     nameField = document.getElementById("rs-name").value;
@@ -117,10 +127,14 @@ function downloadDocxCVFromHistory(id, btnElement) {
 function downloadDocxLetterFromHistory(id, btnElement) {
   const cl = letterData.find((l) => l.id === id);
   if (!cl) return;
+  let finalName = cl.name;
+  if (cl.form && cl.form.position) {
+    finalName = `${cl.name}_${cl.form.position}`;
+  }
   executeDocxExport(
     buildSavedLetterHTML(cl.form),
     "Surat_Lamaran",
-    cl.name,
+    finalName,
     btnElement,
   );
 }
